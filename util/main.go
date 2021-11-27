@@ -36,6 +36,7 @@ func (f File) AsLines() []string {
 	return strings.Split(strings.TrimSpace(string(f)), newLine())
 }
 
+//Returns the File with CRLF linebreaks instead of LF (for testing purposes)
 func (f File) WithCRLF() File {
 	return []byte(strings.ReplaceAll(string(f), "\n", newLine()))
 }
