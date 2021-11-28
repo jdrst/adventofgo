@@ -59,3 +59,9 @@ func (l Line) AsInt() int {
 	Handle(err)
 	return i
 }
+
+func ToInt(s string) int {
+	i, err := strconv.Atoi(s)
+	Handle(err)
+	return i
+}
