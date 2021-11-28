@@ -7,16 +7,16 @@ import (
 )
 
 func main() {
-	fmt.Println(partOne(util.ReadFile("input.txt")))
-	fmt.Println(partTwo(util.ReadFile("input.txt")))
+	fmt.Printf("First part: %v\n", partOne(util.ReadFile("input.txt")))
+	fmt.Printf("Second part: %v\n", partTwo(util.ReadFile("input.txt")))
 }
 
 func partTwo(file util.File) string {
 	lines := file.AsLines()
-	return lines[1]
+	return string(lines[1])
 }
 
 func partOne(file util.File) string {
 	lines := file.AsLines()
-	return lines[0]
+	return string(lines[0])
 }
