@@ -8,6 +8,10 @@
 
 `go test`
 
+### Benchmark:
+
+`go test -bench=B -benchmem`
+
 ## Run:
 
 `go run .`
