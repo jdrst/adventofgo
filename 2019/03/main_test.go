@@ -4,8 +4,8 @@ import (
 	"testing"
 )
 
-var testInput = `testOne
-testTwo`
+// var testInput = `testOne
+// testTwo`
 
 // func TestPartOne(t *testing.T) {
 // 	expected := "testOne"
