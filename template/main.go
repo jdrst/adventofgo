@@ -11,12 +11,12 @@ func main() {
 	fmt.Printf("Second part: %v\n", partTwo(util.ReadFile("input.txt")))
 }
 
-func partTwo(file util.File) string {
-	lines := file.AsLines()
-	return string(lines[1])
-}
-
 func partOne(file util.File) string {
 	lines := file.AsLines()
 	return string(lines[0])
+}
+
+func partTwo(file util.File) string {
+	lines := file.AsLines()
+	return string(lines[1])
 }
