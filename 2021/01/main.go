@@ -28,15 +28,14 @@ func partOne(file util.File) int {
 
 func partTwo(file util.File) int {
 	lines := file.AsLines().AsInts()
-	prev := lines[0] + lines[1] + lines[2]
+	prev := lines[0]
 	incr := 0
 
-	for i := 1; i < len(lines)-2; i++ {
-		curr := lines[i] + lines[i+1] + lines[i+2]
-		if curr > prev {
+	for i := 3; i < len(lines); i++ {
+		if lines[i] > prev {
 			incr++
 		}
-		prev = curr
+		prev = lines[i-2]
 	}
 
 	return incr
