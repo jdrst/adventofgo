@@ -6,7 +6,10 @@
 
 ## Test:
 
+### within day
 `go test`
+### all of them (in project root)
+`go test ./...`
 
 ### Benchmark:
 

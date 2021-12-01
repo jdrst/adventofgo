@@ -20,7 +20,7 @@ var tests = []struct {
 func TestPartOne(t *testing.T) {
 	for _, test := range tests {
 		expected := test.expected
-		actual := partOne(util.File(test.input).WithCRLF())
+		actual := partOne(util.File(test.input).WithOSLinebreaks())
 		if actual != expected {
 			t.Errorf("expected was: %v \n actual is: %v", expected, actual)
 		}

@@ -24,7 +24,7 @@ type Lines []Line
 //Line is a string
 type Line string
 
-//ReadFile reads the file into
+//ReadFile reads a file into the File struct ([]byte) and calls log.Fatal on an Error
 func ReadFile(path string) File {
 	input, err := os.ReadFile(path)
 	Handle(err)
@@ -38,9 +38,18 @@ func Handle(err error) {
 	}
 }
 
-//Returns the lines of a file as Lines type (string array)
+//AsLines returns the lines of a file as Lines type ([]string)
 func (f File) AsLines() Lines {
-	strings := strings.Split(strings.TrimSpace(string(f)), newLine())
+	return split(strings.TrimSpace(string(f)), newLine())
+}
+
+//SubSplitWith splits a Line on into Lines using the given separator
+func (l Line) SubSplitWith(separator string) Lines {
+	return split(string(l), separator)
+}
+
+func split(s, sep string) Lines {
+	strings := strings.Split(s, sep)
 	lines := make([]Line, len(strings))
 	for i, s := range strings {
 		lines[i] = Line(s)
@@ -48,12 +57,12 @@ func (f File) AsLines() Lines {
 	return lines
 }
 
-//Returns the File with CRLF linebreaks instead of LF (for testing purposes)
-func (f File) WithCRLF() File {
+//WithOSLinebreaks returns the File with OS-specific linebreaks instead of LF (for testing purposes)
+func (f File) WithOSLinebreaks() File {
 	return []byte(strings.ReplaceAll(string(f), "\n", newLine()))
 }
 
-//Returns lines as ints
+//AsInts converts Lines ([]string) to []int
 func (lines Lines) AsInts() []int {
 	res := make([]int, len(lines))
 	for i, l := range lines {
@@ -62,13 +71,12 @@ func (lines Lines) AsInts() []int {
 	return res
 }
 
-//Returns the line converted to int
+//AsInt converts a line to int and calls log.Fatal on an Error
 func (l Line) AsInt() int {
-	i, err := strconv.Atoi(string(l))
-	Handle(err)
-	return i
+	return ToInt(string(l))
 }
 
+//ToInt converts a string to an int and calls log.Fatal on an Error
 func ToInt(s string) int {
 	i, err := strconv.Atoi(s)
 	Handle(err)

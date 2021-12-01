@@ -17,7 +17,7 @@ var testInput2 = `14
 
 func TestPartOne(t *testing.T) {
 	expected := 2 + 2 + 654 + 33583
-	actual := partOne(util.File(testInput).WithCRLF())
+	actual := partOne(util.File(testInput).WithOSLinebreaks())
 	if actual != expected {
 		t.Errorf("expected was: %v \n actual is: %v", expected, actual)
 	}
@@ -25,7 +25,7 @@ func TestPartOne(t *testing.T) {
 
 func TestPartTwo(t *testing.T) {
 	expected := 2 + 966 + 50346
-	actual := partTwo(util.File(testInput2).WithCRLF())
+	actual := partTwo(util.File(testInput2).WithOSLinebreaks())
 	if actual != expected {
 		t.Errorf("\nexpected was: %v\nactual is: %v", expected, actual)
 	}
