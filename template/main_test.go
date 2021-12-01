@@ -25,8 +25,16 @@ func TestPartTwo(t *testing.T) {
 	}
 }
 
-func BenchmarkMain(b *testing.B) {
+func BenchmarkPartOne(b *testing.B) {
+	input := util.ReadFile("input.txt")
 	for n := 0; n < b.N; n++ {
-		main()
+		partOne(input)
+	}
+}
+
+func BenchmarkPartTwo(b *testing.B) {
+	input := util.ReadFile("input.txt")
+	for n := 0; n < b.N; n++ {
+		partTwo(input)
 	}
 }
