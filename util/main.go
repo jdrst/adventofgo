@@ -53,6 +53,15 @@ func (f File) WithCRLF() File {
 	return []byte(strings.ReplaceAll(string(f), "\n", newLine()))
 }
 
+//Returns lines as ints
+func (lines Lines) AsInts() []int {
+	res := make([]int, len(lines))
+	for i, l := range lines {
+		res[i] = l.AsInt()
+	}
+	return res
+}
+
 //Returns the line converted to int
 func (l Line) AsInt() int {
 	i, err := strconv.Atoi(string(l))
