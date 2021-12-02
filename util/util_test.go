@@ -12,7 +12,8 @@ test2`
 
 func TestReadFile(t *testing.T) {
 	fileName := "test.txt"
-	os.WriteFile(fileName, []byte(testInput), fs.ModeTemporary)
+	err := os.WriteFile(fileName, []byte(testInput), fs.ModeTemporary)
+	Handle(err)
 	defer os.Remove(fileName)
 	expected := testInput
 
