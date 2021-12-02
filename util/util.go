@@ -24,14 +24,14 @@ type Lines []Line
 //Line is a string
 type Line string
 
-//ReadFile reads a file into the File struct ([]byte) and calls log.Fatal on an Error
+//ReadFile reads a file into the File struct ([]byte) and calls log.Fatal on an error
 func ReadFile(path string) File {
 	input, err := os.ReadFile(path)
 	Handle(err)
 	return input
 }
 
-//Handle calls log.Fatal on an Error
+//Handle calls log.Fatal on an error
 func Handle(err error) {
 	if err != nil {
 		log.Fatal(err)
@@ -71,12 +71,12 @@ func (lines Lines) AsInts() []int {
 	return res
 }
 
-//AsInt converts a line to int and calls log.Fatal on an Error
+//AsInt converts a line to int and calls log.Fatal on an error
 func (l Line) AsInt() int {
 	return ToInt(string(l))
 }
 
-//ToInt converts a string to an int and calls log.Fatal on an Error
+//ToInt converts a string to an int and calls log.Fatal on an error
 func ToInt(s string) int {
 	i, err := strconv.Atoi(s)
 	Handle(err)

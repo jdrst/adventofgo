@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"git.threeman.info/jd/adventofcode/util"
+	"github.com/jdrst/adventofgo/util"
 )
 
 func main() {

@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strings"
 
-	"git.threeman.info/jd/adventofcode/util"
+	"github.com/jdrst/adventofgo/util"
 )
 
 type Point struct {

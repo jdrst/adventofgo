@@ -3,7 +3,7 @@ package main
 import (
 	"testing"
 
-	"git.threeman.info/jd/adventofcode/util"
+	"github.com/jdrst/adventofgo/util"
 )
 
 var testInput = `12
