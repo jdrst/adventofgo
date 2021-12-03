@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/bits"
 	"strconv"
 
 	"github.com/jdrst/adventofgo/util"
@@ -17,23 +18,25 @@ func partOne(file util.File) int {
 	gammaRate := 0
 	for i := 0; i < len(lines[0]); i++ {
 		gammaRate <<= 1
-		if getMostCommonBitOnPos(i, lines) {
+		if getMostCommonBitOnPos(i, lines) == '1' {
 			gammaRate |= 1
 		}
 	}
-	return int(gammaRate * (1<<len(lines[0]) - 1 ^ gammaRate))
+	leadingZeroes := bits.LeadingZeros(uint(gammaRate))
+	return int(gammaRate * (^gammaRate << leadingZeroes >> leadingZeroes))
 }
 
 func partTwo(file util.File) int {
 	oxy := file.AsLines()
-	co2 := file.AsLines()
+	co2 := make(util.Lines, len(oxy))
+	copy(co2, oxy)
 
 	for i := 0; i < len(oxy[0]); i++ {
-		mostCommon := getMostCommonBitOnPos(i, oxy)
-		leastCommon := !getMostCommonBitOnPos(i, co2)
+		mostCommonOxy := getMostCommonBitOnPos(i, oxy)
+		mostCommonCo2 := getMostCommonBitOnPos(i, co2)
 
 		for j := 0; j < len(oxy) && len(oxy) > 1; j++ {
-			if string(oxy[j][i]) == "1" == mostCommon {
+			if rune(oxy[j][i]) == mostCommonOxy {
 				continue
 			}
 			oxy[j] = oxy[len(oxy)-1]
@@ -42,7 +45,7 @@ func partTwo(file util.File) int {
 		}
 
 		for j := 0; j < len(co2) && len(co2) > 1; j++ {
-			if string(co2[j][i]) == "1" == leastCommon {
+			if rune(co2[j][i]) != mostCommonCo2 {
 				continue
 			}
 			co2[j] = co2[len(co2)-1]
@@ -51,19 +54,22 @@ func partTwo(file util.File) int {
 		}
 	}
 
-	first, err := strconv.ParseInt(string(oxy[0]), 2, 64)
+	oxyGenRat, err := strconv.ParseInt(string(oxy[0]), 2, 64)
 	util.Handle(err)
-	second, err := strconv.ParseInt(string(co2[0]), 2, 64)
+	co2ScrRat, err := strconv.ParseInt(string(co2[0]), 2, 64)
 	util.Handle(err)
-	return int(first * second)
+	return int(oxyGenRat * co2ScrRat)
 }
 
-func getMostCommonBitOnPos(pos int, lines util.Lines) bool {
+func getMostCommonBitOnPos(pos int, lines util.Lines) rune {
 	cnt := 0
 	for _, l := range lines {
 		if l[pos] == '1' {
 			cnt++
 		}
 	}
-	return float64(cnt) >= float64(len(lines))/2
+	if float64(cnt) >= float64(len(lines))/2 {
+		return '1'
+	}
+	return '0'
 }
