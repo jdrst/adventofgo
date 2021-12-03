@@ -1,9 +1,5 @@
 package main
 
-import (
-	"testing"
-)
-
 // func TestPart1(t *testing.T) {
 // 	newLine = "\n"
 // 	actual := 0
@@ -32,21 +28,21 @@ import (
 // 	}
 // }
 
-func BenchmarkPart1(b *testing.B) {
-	newLine = "\r\n"
-	//input := prepInput(parseInput())
-	for n := 0; n < b.N; n++ {
-		//
-	}
-}
-func BenchmarkPart2(b *testing.B) {
-	newLine = "\r\n"
-	//input := prepInput(parseInput())
-	for n := 0; n < b.N; n++ {
-		//
-	}
-}
+// func BenchmarkPart1(b *testing.B) {
+// 	newLine = "\r\n"
+// 	input := prepInput(parseInput())
+// 	for n := 0; n < b.N; n++ {
 
-const testinput1 = ``
+// 	}
+// }
+// func BenchmarkPart2(b *testing.B) {
+// 	newLine = "\r\n"
+// 	input := prepInput(parseInput())
+// 	for n := 0; n < b.N; n++ {
 
-const testinput2 = ``
+// 	}
+// }
+
+// const testinput1 = ``
+
+// const testinput2 = ``

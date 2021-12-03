@@ -47,7 +47,6 @@ func bagsContaining(bagColor string, bags map[string]map[string]int, bagsHolding
 			}
 		}
 	}
-	return
 }
 
 func bagsRequiredIn(startingBagColor string, bags map[string]map[string]int) (count int) {

@@ -114,7 +114,7 @@ func findExactRulePositions(rules map[string]rule) map[string]rule {
 
 				}
 				if count == 1 {
-					currentRule.possiblePositions = map[int]struct{}{i: struct{}{}}
+					currentRule.possiblePositions = map[int]struct{}{i: {}}
 					rulesAndPositions[name] = currentRule
 					delete(rules, name)
 					continue rules

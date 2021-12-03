@@ -181,12 +181,3 @@ func getAllRulesFor(rule string, rules map[string][]string) []string {
 	}
 	return res
 }
-
-func contains(array []string, s string) bool {
-	for _, a := range array {
-		if a == s {
-			return true
-		}
-	}
-	return false
-}
