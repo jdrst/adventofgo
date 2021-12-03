@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/jdrst/adventofgo/util"
 )
@@ -15,35 +14,17 @@ func main() {
 
 func partOne(file util.File) int {
 	lines := file.AsLines()
-	countOfOnes := make([]int, 12)
-	for _, l := range lines {
-		for i, c := range l {
-			if c == '1' {
-				countOfOnes[i]++
-			}
-		}
-	}
-	gma := strings.Builder{}
-	eps := strings.Builder{}
-	gammaRate := 0
-	epsilonRate := 0
-	for _, n := range countOfOnes {
-		if n > len(lines)/2 {
-			gma.WriteString(fmt.Sprintf("%v", 1))
-			eps.WriteString(fmt.Sprintf("%v", 0))
-			gammaRate = gammaRate<<1 | 1
-			epsilonRate = epsilonRate << 1
+	mostCommonBits := make([]byte, len(lines[0]))
+	for i := range mostCommonBits {
+		if getMostCommonBitOnPos(i, lines) {
+			mostCommonBits[i] = '1'
 		} else {
-			gma.WriteString(fmt.Sprintf("%v", 0))
-			eps.WriteString(fmt.Sprintf("%v", 1))
-			gammaRate = gammaRate << 1
-			epsilonRate = epsilonRate<<1 | 1
-
+			mostCommonBits[i] = '0'
 		}
 	}
-	fmt.Println(gma.String())
-	fmt.Println(eps.String())
-	return gammaRate * epsilonRate
+	gammaRate, err := strconv.ParseInt(string(mostCommonBits), 2, 64)
+	util.Handle(err)
+	return int(gammaRate * (1<<len(lines[0]) - 1 ^ gammaRate))
 }
 
 func partTwo(file util.File) int {

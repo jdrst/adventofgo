@@ -19,13 +19,13 @@ var testInput = `00100
 00010
 01010`
 
-// func TestPartOne(t *testing.T) {
-// 	expected := "testOne"
-// 	actual := partOne(util.File(testInput).WithOSLinebreaks())
-// 	if actual != expected {
-// 		t.Errorf("expected was: %v \n actual is: %v", expected, actual)
-// 	}
-// }
+func TestPartOne(t *testing.T) {
+	expected := 198
+	actual := partOne(util.File(testInput).WithOSLinebreaks())
+	if actual != expected {
+		t.Errorf("expected was: %v \n actual is: %v", expected, actual)
+	}
+}
 
 func TestPartTwo(t *testing.T) {
 	expected := 230
