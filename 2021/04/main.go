@@ -102,9 +102,9 @@ func createBoardsFrom(a []string) []Board {
 
 	for i, s := range a {
 		var b Board
-		for i, r := range strings.Split(s, util.NewLine()) {
-			for j, n := range strings.Fields(r) {
-				b[i][j] = BingoNumber{util.ToInt(n), false}
+		for j, r := range strings.Split(s, util.NewLine()) {
+			for k, n := range strings.Fields(r) {
+				b[j][k] = BingoNumber{util.ToInt(n), false}
 			}
 		}
 		boards[i] = b
