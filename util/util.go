@@ -8,7 +8,8 @@ import (
 	"strings"
 )
 
-func newLine() string {
+//returns "\n" for non-windows and "\r\n" for windows runtime
+func NewLine() string {
 	if runtime.GOOS == "windows" {
 		return "\r\n"
 	}
@@ -40,7 +41,7 @@ func Handle(err error) {
 
 //AsLines returns the lines of a file as Lines type ([]string)
 func (f File) AsLines() Lines {
-	return split(strings.TrimSpace(string(f)), newLine())
+	return split(strings.TrimSpace(string(f)), NewLine())
 }
 
 //SubSplitWith splits a Line on into Lines using the given separator
@@ -59,7 +60,7 @@ func split(s, sep string) Lines {
 
 //WithOSLinebreaks returns the File with OS-specific linebreaks instead of LF (for testing purposes)
 func (f File) WithOSLinebreaks() File {
-	return []byte(strings.ReplaceAll(string(f), "\n", newLine()))
+	return []byte(strings.ReplaceAll(string(f), "\n", NewLine()))
 }
 
 //AsInts converts Lines ([]string) to []int

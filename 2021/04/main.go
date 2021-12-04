@@ -2,18 +2,10 @@ package main
 
 import (
 	"fmt"
-	"runtime"
 	"strings"
 
 	"github.com/jdrst/adventofgo/util"
 )
-
-func newLine() string {
-	if runtime.GOOS == "windows" {
-		return "\r\n"
-	}
-	return "\n"
-}
 
 type BingoNumber struct {
 	num    int
@@ -28,7 +20,7 @@ func main() {
 }
 
 func partOne(file util.File) int {
-	lines := strings.Split(strings.TrimSpace(string(file)), newLine()+newLine())
+	lines := strings.Split(strings.TrimSpace(string(file)), util.NewLine()+util.NewLine())
 	nums := util.Line(lines[0]).SubSplitWith(",").AsInts()
 	boards := createBoardsFrom(lines[1:])
 	for _, n := range nums {
@@ -43,7 +35,7 @@ func partOne(file util.File) int {
 }
 
 func partTwo(file util.File) int {
-	lines := strings.Split(strings.TrimSpace(string(file)), newLine()+newLine())
+	lines := strings.Split(strings.TrimSpace(string(file)), util.NewLine()+util.NewLine())
 	nums := util.Line(lines[0]).SubSplitWith(",").AsInts()
 	boards := createBoardsFrom(lines[1:])
 
@@ -114,7 +106,7 @@ func createBoardsFrom(a []string) []Board {
 
 	for i, s := range a {
 		var b Board
-		for i, r := range strings.Split(s, newLine()) {
+		for i, r := range strings.Split(s, util.NewLine()) {
 			for j, n := range strings.Fields(r) {
 				b[i][j] = BingoNumber{util.ToInt(n), false}
 			}
