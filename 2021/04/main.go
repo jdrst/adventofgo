@@ -30,11 +30,7 @@ func main() {
 func partOne(file util.File) int {
 	lines := strings.Split(strings.TrimSpace(string(file)), newLine()+newLine())
 	nums := util.Line(lines[0]).SubSplitWith(",").AsInts()
-	stringBoards := lines[1:]
-	boards := make([]Board, len(stringBoards))
-	for i, b := range stringBoards {
-		boards[i] = createBoardFrom(b)
-	}
+	boards := createBoardsFrom(lines[1:])
 	for _, n := range nums {
 		for j := range boards {
 			boards[j].MarkNum(n)
@@ -46,14 +42,24 @@ func partOne(file util.File) int {
 	return 0
 }
 
-func createBoardFrom(s string) Board {
-	var b Board
-	for i, r := range strings.Split(s, newLine()) {
-		for j, n := range strings.Fields(r) {
-			b[i][j] = BingoNumber{util.ToInt(n), false}
+func partTwo(file util.File) int {
+	lines := strings.Split(strings.TrimSpace(string(file)), newLine()+newLine())
+	nums := util.Line(lines[0]).SubSplitWith(",").AsInts()
+	boards := createBoardsFrom(lines[1:])
+
+	var lastWinningScore int
+
+	for _, n := range nums {
+		for j := 0; j < len(boards); j++ {
+			boards[j].MarkNum(n)
+			if boards[j].HasWon() {
+				lastWinningScore = boards[j].CalculateScore(n)
+				boards = append(boards[:j], boards[j+1:]...)
+				j--
+			}
 		}
 	}
-	return b
+	return lastWinningScore
 }
 
 func (b *Board) CalculateScore(winNr int) int {
@@ -79,51 +85,42 @@ func (b *Board) MarkNum(num int) {
 }
 
 func (b Board) HasWon() bool {
+
+nextRow:
 	for _, r := range b {
-		cnt := 0
 		for _, n := range r {
-			if n.marked {
-				cnt++
+			if !n.marked {
+				continue nextRow
 			}
 		}
-		if cnt == 5 {
-			return true
-		}
+		return true
 	}
+
+nextCol:
 	for i := 0; i < 5; i++ {
-		cnt := 0
 		for j := 0; j < 5; j++ {
-			if b[j][i].marked {
-				cnt++
+			if !b[j][i].marked {
+				continue nextCol
 			}
 		}
-		if cnt == 5 {
-			return true
-		}
+		return true
 	}
+
 	return false
 }
 
-func partTwo(file util.File) int {
-	lines := strings.Split(strings.TrimSpace(string(file)), newLine()+newLine())
-	nums := util.Line(lines[0]).SubSplitWith(",").AsInts()
-	stringBoards := lines[1:]
-	boards := make([]Board, len(stringBoards))
+func createBoardsFrom(a []string) []Board {
+	boards := make([]Board, len(a))
 
-	var lastWinningScore int
-
-	for i, b := range stringBoards {
-		boards[i] = createBoardFrom(b)
-	}
-	for _, n := range nums {
-		for j := 0; j < len(boards); j++ {
-			boards[j].MarkNum(n)
-			if boards[j].HasWon() {
-				lastWinningScore = boards[j].CalculateScore(n)
-				boards = append(boards[:j], boards[j+1:]...)
-				j--
+	for i, s := range a {
+		var b Board
+		for i, r := range strings.Split(s, newLine()) {
+			for j, n := range strings.Fields(r) {
+				b[i][j] = BingoNumber{util.ToInt(n), false}
 			}
 		}
+		boards[i] = b
 	}
-	return lastWinningScore
+
+	return boards
 }
