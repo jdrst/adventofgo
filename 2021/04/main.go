@@ -79,25 +79,21 @@ func (b *Board) MarkNum(num int) {
 func (b Board) HasWon() bool {
 
 nextRow:
-	for _, r := range b {
+	for i, r := range b {
 		for _, n := range r {
 			if !n.marked {
+				goto cols
+			}
+		}
+		return true
+	cols:
+		for j := 0; j < len(b); j++ {
+			if !b[j][i].marked {
 				continue nextRow
 			}
 		}
 		return true
 	}
-
-nextCol:
-	for i := 0; i < 5; i++ {
-		for j := 0; j < 5; j++ {
-			if !b[j][i].marked {
-				continue nextCol
-			}
-		}
-		return true
-	}
-
 	return false
 }
 
