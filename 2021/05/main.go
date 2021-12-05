@@ -20,7 +20,7 @@ func partOne(file util.File) int {
 
 	vents := make([][]Point, len(lines))
 
-	for _, l := range lines {
+	for i, l := range lines {
 		pAS := l.SubSplitWith(" -> ")
 
 		p1s := pAS[0].SubSplitWith(",")
@@ -30,7 +30,7 @@ func partOne(file util.File) int {
 		p2 := Point{p2s[0].AsInt(), p2s[1].AsInt()}
 
 		if p1.x == p2.x || p1.y == p2.y {
-			vents = append(vents, createVents(p1, p2))
+			vents[i] = createVents(p1, p2)
 		}
 	}
 	ventMap := createVentMap(vents)
@@ -92,7 +92,7 @@ func partTwo(file util.File) int {
 
 	vents := make([][]Point, len(lines))
 
-	for _, l := range lines {
+	for i, l := range lines {
 		pAS := l.SubSplitWith(" -> ")
 
 		p1s := pAS[0].SubSplitWith(",")
@@ -101,8 +101,7 @@ func partTwo(file util.File) int {
 		p2s := pAS[1].SubSplitWith(",")
 		p2 := Point{p2s[0].AsInt(), p2s[1].AsInt()}
 
-		vents = append(vents, createVents(p1, p2))
-
+		vents[i] = createVents(p1, p2)
 	}
 	ventMap := createVentMap(vents)
 	return countOverlappingPoints(ventMap)
