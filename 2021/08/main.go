@@ -58,23 +58,32 @@ func deduceValue(pattern, output string) int {
 
 func getPatternMapping(patterns []string) map[int]string {
 	patternMap := make(map[int]string)
-	known := [10]int{}
+	one := 0
+	seven := 0
+	four := 0
+	eight := 0
 
+	/*
+		we're producing a map from "mixed up" segment to correct segment,
+		so we can then map each character (rune) of the pattern to the correct character,
+		applying the following rules:
+	*/
+
+	//getting the values (sum of all characters) for known representations 1 ("cf"), 4 ("bcdf"), 7 ("acf") and 8 ("abcdefg")
 	for _, p := range patterns {
-		if len(p) == 2 {
-			known[1] = sumOfCharacters(p)
-		}
-		if len(p) == 4 {
-			known[4] = sumOfCharacters(p)
-		}
-		if len(p) == 3 {
-			known[7] = sumOfCharacters(p)
-		}
-		if len(p) == 7 {
-			known[8] = sumOfCharacters(p)
+		switch len(p) {
+		case 2:
+			one = sumOfCharacters(p)
+		case 3:
+			seven = sumOfCharacters(p)
+		case 4:
+			four = sumOfCharacters(p)
+		case 7:
+			eight = sumOfCharacters(p)
 		}
 	}
 
+	//getting the values that can be derived from the count of occurence
 	for _, r := range "abcdefg" {
 		count := 0
 		for _, s := range patterns {
@@ -82,23 +91,29 @@ func getPatternMapping(patterns []string) map[int]string {
 				count++
 			}
 		}
-		if count == 4 {
+		switch count {
+		case 4:
+			//four occurences gives us "e"
 			patternMap[int(r)] = "e"
-		}
-		if count == 9 {
+		case 9:
+			//nine occurences gives us "f"
+			//and also "c" because 1 is "cf" and "cf"-"f" = "c"
 			patternMap[int(r)] = "f"
-			patternMap[known[1]-int(r)] = "c"
-		}
-		if count == 6 {
+			patternMap[one-int(r)] = "c"
+		case 6:
+			//six occurences gives us "b"
 			patternMap[int(r)] = "b"
 		}
 	}
 
-	patternMap[known[7]-known[1]] = "a"
+	//difference between 7 ("acf") and 1 ("cf") is "a"
+	patternMap[seven-one] = "a"
 
-	patternMap[known[8]-known[4]-keyForVal("e", patternMap)-keyForVal("a", patternMap)] = "g"
+	//difference between 8 ("abcdefg") and 4 ("bcdf") = "aeg" then "aeg" - "a" - "e" (values we now know) is "g"
+	patternMap[eight-four-keyForVal("e", patternMap)-keyForVal("a", patternMap)] = "g"
 
-	patternMap[known[8]-sumOfKeys(patternMap)] = "d"
+	//difference between 8 ("abcdefg") and the values of all characters known ("abcefg") is "d"
+	patternMap[eight-sumOfKeys(patternMap)] = "d"
 
 	return patternMap
 }
