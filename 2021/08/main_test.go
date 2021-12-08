@@ -68,7 +68,7 @@ var IsInAnyOrderTestcases = []struct {
 
 func TestIsInAnyOrder(t *testing.T) {
 	for _, test := range IsInAnyOrderTestcases {
-		if IsInAnyOrder(test.first, test.second) != test.expected {
+		if isInAnyOrder(test.first, test.second) != test.expected {
 			t.Errorf("IsInAnyOrder for %v and %v should return %v", test.first, test.second, test.expected)
 		}
 	}

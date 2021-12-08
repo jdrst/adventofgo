@@ -45,61 +45,95 @@ func partTwo(file util.File) int {
 }
 
 func deduceValue(pattern, output string) int {
-	digits := make(map[int]string)
-	known := [10]int{}
 	patterns := strings.Fields(pattern)
-	for _, p := range patterns {
-		if len(p) == 2 {
-			known[1] = sum(p)
-		}
-		if len(p) == 4 {
-			known[4] = sum(p)
-		}
-		if len(p) == 3 {
-			known[7] = sum(p)
-		}
-		if len(p) == 7 {
-			known[8] = sum(p)
-		}
-	}
-	digits[known[7]-known[1]] = "a"
 
-	counts := map[rune]int{'a': 0, 'b': 0, 'c': 0, 'd': 0, 'e': 0, 'f': 0, 'g': 0}
-	for _, r := range "abcdefg" {
-		for _, s := range patterns {
-			if strings.ContainsRune(s, r) {
-				counts[r]++
-			}
-		}
-	}
-
-	for k, v := range counts {
-		if v == 4 {
-			digits[int(k)] = "e"
-		}
-	}
-
-	digits[known[8]-known[4]-sumOfKeys(digits)] = "g"
-
-	for k, v := range counts {
-		if v == 9 {
-			digits[int(k)] = "f"
-			digits[known[1]-int(k)] = "c"
-		}
-		if v == 6 {
-			digits[int(k)] = "b"
-		}
-	}
-
-	digits[known[8]-sumOfKeys(digits)] = "d"
+	mapping := getPatternMapping(patterns)
 
 	outputs := strings.Fields(output)
-	mappedOutputs := make([]string, len(outputs))
-	for i, s := range outputs {
-		mappedOutputs[i] = getDigit(s, digits)
+
+	mappedOutputs := mapOutputs(outputs, mapping)
+
+	return getValue(mappedOutputs)
+}
+
+func getPatternMapping(patterns []string) map[int]string {
+	patternMap := make(map[int]string)
+	known := [10]int{}
+
+	for _, p := range patterns {
+		if len(p) == 2 {
+			known[1] = sumOfCharacters(p)
+		}
+		if len(p) == 4 {
+			known[4] = sumOfCharacters(p)
+		}
+		if len(p) == 3 {
+			known[7] = sumOfCharacters(p)
+		}
+		if len(p) == 7 {
+			known[8] = sumOfCharacters(p)
+		}
 	}
 
-	return getInt(mappedOutputs)
+	for _, r := range "abcdefg" {
+		count := 0
+		for _, s := range patterns {
+			if strings.ContainsRune(s, r) {
+				count++
+			}
+		}
+		if count == 4 {
+			patternMap[int(r)] = "e"
+		}
+		if count == 9 {
+			patternMap[int(r)] = "f"
+			patternMap[known[1]-int(r)] = "c"
+		}
+		if count == 6 {
+			patternMap[int(r)] = "b"
+		}
+	}
+
+	patternMap[known[7]-known[1]] = "a"
+
+	patternMap[known[8]-known[4]-keyForVal("e", patternMap)-keyForVal("a", patternMap)] = "g"
+
+	patternMap[known[8]-sumOfKeys(patternMap)] = "d"
+
+	return patternMap
+}
+
+func keyForVal(value string, m map[int]string) int {
+	for k, v := range m {
+		if v == value {
+			return k
+		}
+	}
+	return 0
+}
+
+func sumOfKeys(known map[int]string) int {
+	sum := 0
+	for k := range known {
+		sum += k
+	}
+	return sum
+}
+
+func sumOfCharacters(str string) int {
+	sum := 0
+	for _, r := range str {
+		sum += int(r)
+	}
+	return sum
+}
+
+func mapOutputs(outputs []string, mapping map[int]string) []string {
+	mappedOutputs := make([]string, len(outputs))
+	for i, s := range outputs {
+		mappedOutputs[i] = getDigit(s, mapping)
+	}
+	return mappedOutputs
 }
 
 func getDigit(s string, mapping map[int]string) string {
@@ -110,28 +144,13 @@ func getDigit(s string, mapping map[int]string) string {
 	return result
 }
 
-func sumOfKeys(known map[int]string) int {
-	sum := 0
-	for k := range known {
-		sum += k
-	}
-	return sum
-}
-func sum(s string) int {
-	sum := 0
-	for _, r := range s {
-		sum += int(r)
-	}
-	return sum
-}
-
-func getInt(input []string) int {
+func getValue(segments []string) int {
 	var displayDigits map[string]string = map[string]string{"abcefg": "0", "cf": "1", "acdeg": "2", "acdfg": "3", "bcdf": "4", "abdfg": "5", "abdefg": "6", "acf": "7", "abcdefg": "8", "abcdfg": "9"}
 	stringResult := ""
 next:
-	for _, s := range input {
+	for _, s := range segments {
 		for k, v := range displayDigits {
-			if IsInAnyOrder(s, k) {
+			if isInAnyOrder(s, k) {
 				stringResult += v
 				continue next
 			}
@@ -139,12 +158,12 @@ next:
 	}
 	res, err := strconv.Atoi(stringResult)
 	if err != nil {
-		log.Fatal("getInt can't convert")
+		log.Fatal("getValue can't convert")
 	}
 	return res
 }
 
-func IsInAnyOrder(a, b string) bool {
+func isInAnyOrder(a, b string) bool {
 	if len(a) != len(b) {
 		return false
 	}
