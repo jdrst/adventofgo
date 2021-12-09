@@ -19,18 +19,18 @@ func main() {
 
 func partOne(file util.File) int {
 	lines := file.AsLines()
-	heightmap := make([][]int, len(lines))
+	heightmap := make(map[Point]int)
 	for i, l := range lines {
-		heightmap[i] = l.SubSplitWith("").AsInts()
+		for j, v := range l.SubSplitWith("").AsInts() {
+			heightmap[Point{i, j}] = v
+		}
 	}
 
 	risklevel := 0
 
-	for i := 0; i < len(heightmap); i++ {
-		for j := 0; j < len(heightmap[i]); j++ {
-			if isLowPoint(i, j, heightmap) {
-				risklevel += heightmap[i][j] + 1
-			}
+	for p := range heightmap {
+		if isLowPoint(p, heightmap) {
+			risklevel += heightmap[p] + 1
 		}
 	}
 
@@ -39,18 +39,18 @@ func partOne(file util.File) int {
 
 func partTwo(file util.File) int {
 	lines := file.AsLines()
-	heightmap := make([][]int, len(lines))
+	heightmap := make(map[Point]int)
 	for i, l := range lines {
-		heightmap[i] = l.SubSplitWith("").AsInts()
+		for j, v := range l.SubSplitWith("").AsInts() {
+			heightmap[Point{i, j}] = v
+		}
 	}
 
 	basins := make([]int, 0)
 
-	for i := 0; i < len(heightmap); i++ {
-		for j := 0; j < len(heightmap[i]); j++ {
-			if isLowPoint(i, j, heightmap) {
-				basins = append(basins, getBasinSize(Point{i, j}, ToHashMap(heightmap), make(map[Point]bool)))
-			}
+	for p := range heightmap {
+		if isLowPoint(p, heightmap) {
+			basins = append(basins, getBasinSize(p, heightmap, make(map[Point]bool)))
 		}
 	}
 
@@ -58,32 +58,22 @@ func partTwo(file util.File) int {
 	return basins[len(basins)-1] * basins[len(basins)-2] * basins[len(basins)-3]
 }
 
-func isLowPoint(x, y int, heightmap [][]int) bool {
-	val := heightmap[x][y]
+func isLowPoint(p Point, heightmap map[Point]int) bool {
+	val := heightmap[p]
 	upper, lower, left, right := math.MaxInt, math.MaxInt, math.MaxInt, math.MaxInt
-	if y > 0 {
-		upper = heightmap[x][y-1]
+	if v, exists := heightmap[Point{p.x + 1, p.y}]; exists {
+		upper = v
 	}
-	if x > 0 {
-		left = heightmap[x-1][y]
+	if v, exists := heightmap[Point{p.x - 1, p.y}]; exists {
+		lower = v
 	}
-	if x < len(heightmap)-1 {
-		right = heightmap[x+1][y]
+	if v, exists := heightmap[Point{p.x, p.y + 1}]; exists {
+		left = v
 	}
-	if y < len(heightmap[x])-1 {
-		lower = heightmap[x][y+1]
+	if v, exists := heightmap[Point{p.x, p.y - 1}]; exists {
+		right = v
 	}
 	return upper > val && left > val && lower > val && right > val
-}
-
-func ToHashMap(heightmap [][]int) map[Point]int {
-	res := make(map[Point]int)
-	for i, r := range heightmap {
-		for j, v := range r {
-			res[Point{i, j}] = v
-		}
-	}
-	return res
 }
 
 func getBasinSize(p Point, heightmap map[Point]int, visited map[Point]bool) int {
@@ -107,11 +97,6 @@ func getBasinSize(p Point, heightmap map[Point]int, visited map[Point]bool) int 
 	}
 	return sum
 }
-
-// func isVisited(p Point, calculated map[Point]bool) bool {
-// 	_, exists := calculated[p]
-// 	return exists
-// }
 
 func isBasinEnd(p Point, heightmap map[Point]int) bool {
 	if v, exists := heightmap[p]; exists {
