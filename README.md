@@ -10,7 +10,7 @@
 `go test`
 
 ### Benchmark:
-`go test -bench=B -benchmem`
+`go test -bench . --benchmem`
 
 ### all of them (in project root)
 `go test ./...`
