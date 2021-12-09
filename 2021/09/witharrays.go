@@ -62,28 +62,11 @@ func partTwoWithArrays(file util.File) int {
 }
 
 func (ha heightArray) basinSizeFor(x, y int) int {
-	if ha.isOutOfBounds(x, y) || ha[x][y].visited {
+	if ha.isOutOfBounds(x, y) || ha[x][y].visited || ha.isBasinEnd(x, y) {
 		return 0
 	}
-	sum := 1
 	ha[x][y].visited = true
-	nx, ny := x+1, y
-	if !ha.isBasinEnd(nx, ny) {
-		sum += ha.basinSizeFor(nx, ny)
-	}
-	nx = x - 1
-	if !ha.isBasinEnd(nx, ny) {
-		sum += ha.basinSizeFor(nx, ny)
-	}
-	nx, ny = x, y+1
-	if !ha.isBasinEnd(nx, ny) {
-		sum += ha.basinSizeFor(nx, ny)
-	}
-	ny = y - 1
-	if !ha.isBasinEnd(nx, ny) {
-		sum += ha.basinSizeFor(nx, ny)
-	}
-	return sum
+	return 1 + ha.basinSizeFor(x+1, y) + ha.basinSizeFor(x-1, y) + ha.basinSizeFor(x, y-1) + ha.basinSizeFor(x, y+1)
 }
 
 func (ha heightArray) isLowPoint(x, y int) bool {

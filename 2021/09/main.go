@@ -61,25 +61,12 @@ func partTwo(file util.File) int {
 }
 
 func (hm heightMap) basinSizeFor(p point, visited map[point]bool) int {
-	if _, exists := visited[p]; exists {
+	if _, exists := visited[p]; exists || hm.isBasinEnd(p) {
 		return 0
 	}
-	sum := 1
 	visited[p] = true
 	upper, lower, left, right := p.up(), p.down(), p.left(), p.right()
-	if !hm.isBasinEnd(upper) {
-		sum += hm.basinSizeFor(upper, visited)
-	}
-	if !hm.isBasinEnd(lower) {
-		sum += hm.basinSizeFor(lower, visited)
-	}
-	if !hm.isBasinEnd(left) {
-		sum += hm.basinSizeFor(left, visited)
-	}
-	if !hm.isBasinEnd(right) {
-		sum += hm.basinSizeFor(right, visited)
-	}
-	return sum
+	return 1 + hm.basinSizeFor(upper, visited) + hm.basinSizeFor(lower, visited) + hm.basinSizeFor(left, visited) + hm.basinSizeFor(right, visited)
 }
 
 func (hm heightMap) isLowPoint(p point) bool {
