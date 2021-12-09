@@ -8,11 +8,11 @@ import (
 	"github.com/jdrst/adventofgo/util"
 )
 
-type Point struct {
+type point struct {
 	x, y int
 }
 
-type Heightmap map[Point]int
+type heightMap map[point]int
 
 func main() {
 	fmt.Printf("First part: %v\n", partOne(util.ReadFile("input.txt")))
@@ -21,10 +21,10 @@ func main() {
 
 func partOne(file util.File) int {
 	lines := file.AsLines()
-	heightmap := make(Heightmap)
+	heightmap := make(heightMap)
 	for i, l := range lines {
 		for j, v := range l.SubSplitWith("").AsInts() {
-			heightmap[Point{i, j}] = v
+			heightmap[point{i, j}] = v
 		}
 	}
 
@@ -41,10 +41,10 @@ func partOne(file util.File) int {
 
 func partTwo(file util.File) int {
 	lines := file.AsLines()
-	heightmap := make(Heightmap)
+	heightmap := make(heightMap)
 	for i, l := range lines {
 		for j, v := range l.SubSplitWith("").AsInts() {
-			heightmap[Point{i, j}] = v
+			heightmap[point{i, j}] = v
 		}
 	}
 
@@ -52,7 +52,7 @@ func partTwo(file util.File) int {
 
 	for p := range heightmap {
 		if heightmap.isLowPoint(p) {
-			basins = append(basins, heightmap.basinSizeFor(p, make(map[Point]bool)))
+			basins = append(basins, heightmap.basinSizeFor(p, make(map[point]bool)))
 		}
 	}
 
@@ -60,7 +60,7 @@ func partTwo(file util.File) int {
 	return basins[len(basins)-1] * basins[len(basins)-2] * basins[len(basins)-3]
 }
 
-func (hm Heightmap) basinSizeFor(p Point, visited map[Point]bool) int {
+func (hm heightMap) basinSizeFor(p point, visited map[point]bool) int {
 	if _, exists := visited[p]; exists {
 		return 0
 	}
@@ -82,7 +82,7 @@ func (hm Heightmap) basinSizeFor(p Point, visited map[Point]bool) int {
 	return sum
 }
 
-func (hm Heightmap) isLowPoint(p Point) bool {
+func (hm heightMap) isLowPoint(p point) bool {
 	val := hm[p]
 	upper := hm.valueOrMaxInt(p.up())
 	lower := hm.valueOrMaxInt(p.down())
@@ -91,32 +91,32 @@ func (hm Heightmap) isLowPoint(p Point) bool {
 	return upper > val && left > val && lower > val && right > val
 }
 
-func (hm Heightmap) valueOrMaxInt(p Point) int {
+func (hm heightMap) valueOrMaxInt(p point) int {
 	if v, exists := hm[p]; exists {
 		return v
 	}
 	return math.MaxInt
 }
 
-func (heightmap Heightmap) isBasinEnd(p Point) bool {
+func (heightmap heightMap) isBasinEnd(p point) bool {
 	if v, exists := heightmap[p]; exists {
 		return v == 9
 	}
 	return true
 }
 
-func (p Point) up() Point {
-	return Point{p.x + 1, p.y}
+func (p point) up() point {
+	return point{p.x + 1, p.y}
 }
 
-func (p Point) down() Point {
-	return Point{p.x - 1, p.y}
+func (p point) down() point {
+	return point{p.x - 1, p.y}
 }
 
-func (p Point) left() Point {
-	return Point{p.x, p.y - 1}
+func (p point) left() point {
+	return point{p.x, p.y - 1}
 }
 
-func (p Point) right() Point {
-	return Point{p.x, p.y + 1}
+func (p point) right() point {
+	return point{p.x, p.y + 1}
 }
