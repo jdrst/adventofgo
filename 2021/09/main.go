@@ -12,6 +12,8 @@ type Point struct {
 	x, y int
 }
 
+type Heightmap map[Point]int
+
 func main() {
 	fmt.Printf("First part: %v\n", partOne(util.ReadFile("input.txt")))
 	fmt.Printf("Second part: %v\n", partTwo(util.ReadFile("input.txt")))
@@ -19,7 +21,7 @@ func main() {
 
 func partOne(file util.File) int {
 	lines := file.AsLines()
-	heightmap := make(map[Point]int)
+	heightmap := make(Heightmap)
 	for i, l := range lines {
 		for j, v := range l.SubSplitWith("").AsInts() {
 			heightmap[Point{i, j}] = v
@@ -29,7 +31,7 @@ func partOne(file util.File) int {
 	risklevel := 0
 
 	for p := range heightmap {
-		if isLowPoint(p, heightmap) {
+		if heightmap.isLowPoint(p) {
 			risklevel += heightmap[p] + 1
 		}
 	}
@@ -39,7 +41,7 @@ func partOne(file util.File) int {
 
 func partTwo(file util.File) int {
 	lines := file.AsLines()
-	heightmap := make(map[Point]int)
+	heightmap := make(Heightmap)
 	for i, l := range lines {
 		for j, v := range l.SubSplitWith("").AsInts() {
 			heightmap[Point{i, j}] = v
@@ -49,8 +51,8 @@ func partTwo(file util.File) int {
 	basins := make([]int, 0)
 
 	for p := range heightmap {
-		if isLowPoint(p, heightmap) {
-			basins = append(basins, getBasinSize(p, heightmap, make(map[Point]bool)))
+		if heightmap.isLowPoint(p) {
+			basins = append(basins, heightmap.basinSizeFor(p, make(map[Point]bool)))
 		}
 	}
 
@@ -58,49 +60,63 @@ func partTwo(file util.File) int {
 	return basins[len(basins)-1] * basins[len(basins)-2] * basins[len(basins)-3]
 }
 
-func isLowPoint(p Point, heightmap map[Point]int) bool {
-	val := heightmap[p]
-	upper, lower, left, right := math.MaxInt, math.MaxInt, math.MaxInt, math.MaxInt
-	if v, exists := heightmap[Point{p.x + 1, p.y}]; exists {
-		upper = v
-	}
-	if v, exists := heightmap[Point{p.x - 1, p.y}]; exists {
-		lower = v
-	}
-	if v, exists := heightmap[Point{p.x, p.y + 1}]; exists {
-		left = v
-	}
-	if v, exists := heightmap[Point{p.x, p.y - 1}]; exists {
-		right = v
-	}
-	return upper > val && left > val && lower > val && right > val
-}
-
-func getBasinSize(p Point, heightmap map[Point]int, visited map[Point]bool) int {
+func (hm Heightmap) basinSizeFor(p Point, visited map[Point]bool) int {
 	if _, exists := visited[p]; exists {
 		return 0
 	}
 	sum := 1
 	visited[p] = true
-	upper, lower, left, right := Point{p.x + 1, p.y}, Point{p.x - 1, p.y}, Point{p.x, p.y + 1}, Point{p.x, p.y - 1}
-	if !isBasinEnd(upper, heightmap) {
-		sum += getBasinSize(upper, heightmap, visited)
+	upper, lower, left, right := p.up(), p.down(), p.left(), p.right()
+	if !hm.isBasinEnd(upper) {
+		sum += hm.basinSizeFor(upper, visited)
 	}
-	if !isBasinEnd(lower, heightmap) {
-		sum += getBasinSize(lower, heightmap, visited)
+	if !hm.isBasinEnd(lower) {
+		sum += hm.basinSizeFor(lower, visited)
 	}
-	if !isBasinEnd(left, heightmap) {
-		sum += getBasinSize(left, heightmap, visited)
+	if !hm.isBasinEnd(left) {
+		sum += hm.basinSizeFor(left, visited)
 	}
-	if !isBasinEnd(right, heightmap) {
-		sum += getBasinSize(right, heightmap, visited)
+	if !hm.isBasinEnd(right) {
+		sum += hm.basinSizeFor(right, visited)
 	}
 	return sum
 }
 
-func isBasinEnd(p Point, heightmap map[Point]int) bool {
+func (hm Heightmap) isLowPoint(p Point) bool {
+	val := hm[p]
+	upper := hm.valueOrMaxInt(p.up())
+	lower := hm.valueOrMaxInt(p.down())
+	left := hm.valueOrMaxInt(p.left())
+	right := hm.valueOrMaxInt(p.right())
+	return upper > val && left > val && lower > val && right > val
+}
+
+func (hm Heightmap) valueOrMaxInt(p Point) int {
+	if v, exists := hm[p]; exists {
+		return v
+	}
+	return math.MaxInt
+}
+
+func (heightmap Heightmap) isBasinEnd(p Point) bool {
 	if v, exists := heightmap[p]; exists {
 		return v == 9
 	}
 	return true
+}
+
+func (p Point) up() Point {
+	return Point{p.x + 1, p.y}
+}
+
+func (p Point) down() Point {
+	return Point{p.x - 1, p.y}
+}
+
+func (p Point) left() Point {
+	return Point{p.x, p.y - 1}
+}
+
+func (p Point) right() Point {
+	return Point{p.x, p.y + 1}
 }
