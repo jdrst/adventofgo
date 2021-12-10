@@ -29,3 +29,6 @@ BenchmarkPartTwo-12 | 10000 | 107143 ns/op | 106241 B/op | 2003 allocs/op |
 | BenchmarkPartTwo-12 | 325 | 3710870 ns/op | 1923160 B/op | 2012 allocs/op |
 | BenchmarkPartOneWithArrays-12 | 5144 | 230755 ns/op | 643720 B/op | 404 allocs/op |
 | BenchmarkPartTwoWithArrays-12 | 3507 | 340071 ns/op | 647833 B/op | 414 allocs/op |
+| __Day 10__ |||||
+| BenchmarkPartOne-12 | 43714 | 27823 ns/op | 25360 B/op | 224 allocs/op |
+| BenchmarkPartTwo-12 | 43000 | 28140 ns/op | 19136 B/op | 196 allocs/op |
