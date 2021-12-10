@@ -62,7 +62,7 @@ func partTwoWithArrays(file util.File) int {
 }
 
 func (ha heightArray) basinSizeFor(x, y int) int {
-	if ha.isOutOfBounds(x, y) || ha[x][y].visited || ha.isBasinEnd(x, y) {
+	if ha.isBasinEnd(x, y) || ha[x][y].visited {
 		return 0
 	}
 	ha[x][y].visited = true
