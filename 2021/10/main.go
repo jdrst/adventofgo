@@ -18,6 +18,8 @@ func partOne(file util.File) int {
 	lines := file.AsLines()
 	stack := make(Stack, 0)
 	score := 0
+	syntaxerrorpoints := map[rune]int{')': 3, ']': 57, '}': 1197, '>': 25137}
+
 next:
 	for _, l := range lines {
 		for _, c := range l {
@@ -27,7 +29,7 @@ next:
 			case ')', ']', '}', '>':
 				last := stack.pop()
 				if !isCorrectClosure(last, c) {
-					score += getSyntaxErrorPoints(c)
+					score += syntaxerrorpoints[c]
 					stack.clear()
 					continue next
 				}
@@ -41,6 +43,8 @@ func partTwo(file util.File) int {
 	lines := file.AsLines()
 	stack := make(Stack, 0)
 	score := make([]int, 0)
+	autocompletepoints := map[rune]int{'(': 1, '[': 2, '{': 3, '<': 4}
+
 next:
 	for _, l := range lines {
 		for _, c := range l {
@@ -58,7 +62,7 @@ next:
 		currentscore := 0
 		for len(stack) > 0 {
 			currentscore *= 5
-			currentscore += getAutocompletePoints(stack.pop())
+			currentscore += autocompletepoints[stack.pop()]
 		}
 		score = append(score, currentscore)
 	}
@@ -95,35 +99,5 @@ func isCorrectClosure(open, close rune) bool {
 		return close == '>'
 	default:
 		return false
-	}
-}
-
-func getAutocompletePoints(c rune) int {
-	switch c {
-	case '(':
-		return 1
-	case '[':
-		return 2
-	case '{':
-		return 3
-	case '<':
-		return 4
-	default:
-		return 0
-	}
-}
-
-func getSyntaxErrorPoints(c rune) int {
-	switch c {
-	case ')':
-		return 3
-	case ']':
-		return 57
-	case '}':
-		return 1197
-	case '>':
-		return 25137
-	default:
-		return 0
 	}
 }
