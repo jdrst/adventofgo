@@ -31,12 +31,13 @@ func partOne(file util.File) int {
 }
 
 func allPossiblePaths(caveMap map[string]cave, currentCave string) int {
-	if currentCave == "end" {
-		return 1
-	}
 	caveMap[currentCave] = cave{visits: 1, leadsTo: caveMap[currentCave].leadsTo}
 	sum := 0
 	for _, c := range caveMap[currentCave].leadsTo {
+		if c == "end" {
+			sum++
+			continue
+		}
 		if !unicode.IsLower(rune(c[0])) || caveMap[c].visits == 0 {
 			sum += allPossiblePaths(copyMap(caveMap), c)
 		}
@@ -58,15 +59,16 @@ func partTwo(file util.File) int {
 }
 
 func allPossiblePathsTwo(caveMap map[string]cave, currentCave string, hasVisitedTwice bool) int {
-	if currentCave == "end" {
-		return 1
-	}
 	if caveMap[currentCave].visits > 0 && unicode.IsLower(rune(currentCave[0])) {
 		hasVisitedTwice = true
 	}
 	caveMap[currentCave] = cave{visits: caveMap[currentCave].visits + 1, leadsTo: caveMap[currentCave].leadsTo}
 	sum := 0
 	for _, c := range caveMap[currentCave].leadsTo {
+		if c == "end" {
+			sum++
+			continue
+		}
 		if c != "start" && (!unicode.IsLower(rune(c[0])) || caveMap[c].visits < 1 || !hasVisitedTwice) {
 			sum += allPossiblePathsTwo(copyMap(caveMap), c, hasVisitedTwice)
 		}
