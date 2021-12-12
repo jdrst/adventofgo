@@ -27,10 +27,10 @@ func partOne(file util.File) int {
 		caveMap[string(caves[1])] = cave{visits: 0, leadsTo: append(caveMap[string(caves[1])].leadsTo, string(caves[0]))}
 
 	}
-	return allPossiblePaths(caveMap, "start")
+	return allPossiblePathsVisitOnce(caveMap, "start")
 }
 
-func allPossiblePaths(caveMap map[string]cave, currentCave string) int {
+func allPossiblePathsVisitOnce(caveMap map[string]cave, currentCave string) int {
 	caveMap[currentCave] = cave{visits: 1, leadsTo: caveMap[currentCave].leadsTo}
 	sum := 0
 	for _, c := range caveMap[currentCave].leadsTo {
@@ -39,7 +39,11 @@ func allPossiblePaths(caveMap map[string]cave, currentCave string) int {
 			continue
 		}
 		if !unicode.IsLower(rune(c[0])) || caveMap[c].visits == 0 {
-			sum += allPossiblePaths(copyMap(caveMap), c)
+			nextMap := caveMap
+			if unicode.IsLower(rune(c[0])) {
+				nextMap = copyMap(caveMap)
+			}
+			sum += allPossiblePathsVisitOnce(nextMap, c)
 		}
 	}
 	return sum
@@ -55,10 +59,10 @@ func partTwo(file util.File) int {
 		caveMap[string(caves[1])] = cave{visits: 0, leadsTo: append(caveMap[string(caves[1])].leadsTo, string(caves[0]))}
 
 	}
-	return allPossiblePathsTwo(caveMap, "start", false)
+	return allPossiblePathsOneDoubleVisit(caveMap, "start", false)
 }
 
-func allPossiblePathsTwo(caveMap map[string]cave, currentCave string, hasVisitedTwice bool) int {
+func allPossiblePathsOneDoubleVisit(caveMap map[string]cave, currentCave string, hasVisitedTwice bool) int {
 	if caveMap[currentCave].visits > 0 && unicode.IsLower(rune(currentCave[0])) {
 		hasVisitedTwice = true
 	}
@@ -70,7 +74,11 @@ func allPossiblePathsTwo(caveMap map[string]cave, currentCave string, hasVisited
 			continue
 		}
 		if c != "start" && (!unicode.IsLower(rune(c[0])) || caveMap[c].visits < 1 || !hasVisitedTwice) {
-			sum += allPossiblePathsTwo(copyMap(caveMap), c, hasVisitedTwice)
+			nextMap := caveMap
+			if unicode.IsLower(rune(c[0])) {
+				nextMap = copyMap(caveMap)
+			}
+			sum += allPossiblePathsOneDoubleVisit(nextMap, c, hasVisitedTwice)
 		}
 	}
 	return sum

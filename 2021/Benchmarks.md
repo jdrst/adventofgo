@@ -36,5 +36,5 @@ BenchmarkPartTwo-12 | 10000 | 107143 ns/op | 106241 B/op | 2003 allocs/op |
 | BenchmarkPartOne-12 | 4281 | 269505 ns/op | 403747 B/op | 6827 allocs/op |
 | BenchmarkPartTwo-12 | 1126 | 1079021 ns/op | 1487045 B/op | 25078 allocs/op |
 | __Day 12__ |||||
-| BenchmarkPartOne-12 | 124 | 9538769 ns/op | 14322267 B/op | 30857 allocs/op |
-| BenchmarkPartTwo-12 | 4 | 281112475 ns/op | 396135018 B/op | 851250 allocs/op |
+| BenchmarkPartOne-12 | 235 | 5037199 ns/op | 5617953 B/op | 12153 allocs/op |
+| BenchmarkPartTwo-12 | 7 | 148445086 ns/op | 155180467 B/op | 333520 allocs/op |
