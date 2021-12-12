@@ -34,13 +34,12 @@ func allPossiblePaths(caveMap map[string]cave, currentCave string) int {
 	if currentCave == "end" {
 		return 1
 	}
-	if unicode.IsLower(rune(currentCave[0])) && caveMap[currentCave].visits > 0 {
-		return 0
-	}
 	caveMap[currentCave] = cave{visits: 1, leadsTo: caveMap[currentCave].leadsTo}
 	sum := 0
 	for _, c := range caveMap[currentCave].leadsTo {
-		sum += allPossiblePaths(copyMap(caveMap), c)
+		if !unicode.IsLower(rune(c[0])) || caveMap[c].visits == 0 {
+			sum += allPossiblePaths(copyMap(caveMap), c)
+		}
 	}
 	return sum
 }
@@ -62,18 +61,13 @@ func allPossiblePathsTwo(caveMap map[string]cave, currentCave string, hasVisited
 	if currentCave == "end" {
 		return 1
 	}
-	if caveMap[currentCave].visits > 0 {
-		if unicode.IsLower(rune(currentCave[0])) {
-			if hasVisitedTwice {
-				return 0
-			}
-			hasVisitedTwice = true
-		}
+	if caveMap[currentCave].visits > 0 && unicode.IsLower(rune(currentCave[0])) {
+		hasVisitedTwice = true
 	}
 	caveMap[currentCave] = cave{visits: caveMap[currentCave].visits + 1, leadsTo: caveMap[currentCave].leadsTo}
 	sum := 0
 	for _, c := range caveMap[currentCave].leadsTo {
-		if c != "start" {
+		if c != "start" && (!unicode.IsLower(rune(c[0])) || caveMap[c].visits < 1 || !hasVisitedTwice) {
 			sum += allPossiblePathsTwo(copyMap(caveMap), c, hasVisitedTwice)
 		}
 	}
