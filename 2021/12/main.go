@@ -13,37 +13,37 @@ func main() {
 }
 
 type cave struct {
-	visits  int
 	leadsTo []string
 }
 
 func partOne(file util.File) int {
 	lines := file.AsLines()
 	caveMap := map[string]cave{}
+	visits := map[string]int{}
 
 	for _, l := range lines {
 		caves := l.SubSplitWith("-")
-		caveMap[string(caves[0])] = cave{visits: 0, leadsTo: append(caveMap[string(caves[0])].leadsTo, string(caves[1]))}
-		caveMap[string(caves[1])] = cave{visits: 0, leadsTo: append(caveMap[string(caves[1])].leadsTo, string(caves[0]))}
+		caveMap[string(caves[0])] = cave{leadsTo: append(caveMap[string(caves[0])].leadsTo, string(caves[1]))}
+		caveMap[string(caves[1])] = cave{leadsTo: append(caveMap[string(caves[1])].leadsTo, string(caves[0]))}
 
 	}
-	return allPossiblePathsVisitOnce(caveMap, "start")
+	return allPossiblePathsVisitOnce(caveMap, visits, "start")
 }
 
-func allPossiblePathsVisitOnce(caveMap map[string]cave, currentCave string) int {
-	caveMap[currentCave] = cave{visits: 1, leadsTo: caveMap[currentCave].leadsTo}
+func allPossiblePathsVisitOnce(caveMap map[string]cave, visits map[string]int, currentCave string) int {
+	visits[currentCave] += 1
 	sum := 0
 	for _, c := range caveMap[currentCave].leadsTo {
 		if c == "end" {
 			sum++
 			continue
 		}
-		if !unicode.IsLower(rune(c[0])) || caveMap[c].visits == 0 {
-			nextMap := caveMap
+		if !unicode.IsLower(rune(c[0])) || visits[c] == 0 {
+			nextVisits := visits
 			if unicode.IsLower(rune(c[0])) {
-				nextMap = copyMap(caveMap)
+				nextVisits = copyMap(visits)
 			}
-			sum += allPossiblePathsVisitOnce(nextMap, c)
+			sum += allPossiblePathsVisitOnce(caveMap, nextVisits, c)
 		}
 	}
 	return sum
@@ -52,41 +52,42 @@ func allPossiblePathsVisitOnce(caveMap map[string]cave, currentCave string) int 
 func partTwo(file util.File) int {
 	lines := file.AsLines()
 	caveMap := map[string]cave{}
+	visits := map[string]int{}
 
 	for _, l := range lines {
 		caves := l.SubSplitWith("-")
-		caveMap[string(caves[0])] = cave{visits: 0, leadsTo: append(caveMap[string(caves[0])].leadsTo, string(caves[1]))}
-		caveMap[string(caves[1])] = cave{visits: 0, leadsTo: append(caveMap[string(caves[1])].leadsTo, string(caves[0]))}
+		caveMap[string(caves[0])] = cave{leadsTo: append(caveMap[string(caves[0])].leadsTo, string(caves[1]))}
+		caveMap[string(caves[1])] = cave{leadsTo: append(caveMap[string(caves[1])].leadsTo, string(caves[0]))}
 
 	}
-	return allPossiblePathsOneDoubleVisit(caveMap, "start", false)
+	return allPossiblePathsOneDoubleVisit(caveMap, "start", visits, false)
 }
 
-func allPossiblePathsOneDoubleVisit(caveMap map[string]cave, currentCave string, hasVisitedTwice bool) int {
-	if caveMap[currentCave].visits > 0 && unicode.IsLower(rune(currentCave[0])) {
+func allPossiblePathsOneDoubleVisit(caveMap map[string]cave, currentCave string, visits map[string]int, hasVisitedTwice bool) int {
+	if visits[currentCave] > 0 && unicode.IsLower(rune(currentCave[0])) {
 		hasVisitedTwice = true
 	}
-	caveMap[currentCave] = cave{visits: caveMap[currentCave].visits + 1, leadsTo: caveMap[currentCave].leadsTo}
+	visits[currentCave] += 1
 	sum := 0
 	for _, c := range caveMap[currentCave].leadsTo {
 		if c == "end" {
 			sum++
 			continue
 		}
-		if c != "start" && (!unicode.IsLower(rune(c[0])) || caveMap[c].visits < 1 || !hasVisitedTwice) {
-			nextMap := caveMap
+		if c != "start" && (!unicode.IsLower(rune(c[0])) || visits[c] < 1 || !hasVisitedTwice) {
+			nextVisits := visits
 			if unicode.IsLower(rune(c[0])) {
-				nextMap = copyMap(caveMap)
+				nextVisits = copyMap(visits)
 			}
-			sum += allPossiblePathsOneDoubleVisit(nextMap, c, hasVisitedTwice)
+			sum += allPossiblePathsOneDoubleVisit(caveMap, c, nextVisits, hasVisitedTwice)
 		}
 	}
 	return sum
 }
 
-func copyMap(caveMap map[string]cave) map[string]cave {
-	res := make(map[string]cave, len(caveMap))
-	for k, v := range caveMap {
+func copyMap(visits map[string]int) map[string]int {
+	res := make(map[string]int, len(visits))
+	for k, v := range visits {
 		res[k] = v
 	}
 	return res
