@@ -14,10 +14,10 @@ func partOneWithUniquePathArray(file util.File) int {
 		exits[string(caves[1])] = append(exits[string(caves[1])], string(caves[0]))
 	}
 
-	return allPossiblePathsVisitOnceWithUniquePathArray("start", exits, []string{"start"}...)
+	return allPossiblePathsVisitOnceWithUniquePathArray("start", exits, []string{"start"})
 }
 
-func allPossiblePathsVisitOnceWithUniquePathArray(current string, exits map[string][]string, path ...string) int {
+func allPossiblePathsVisitOnceWithUniquePathArray(current string, exits map[string][]string, path []string) int {
 	sum := 0
 loop:
 	for _, next := range exits[current] {
@@ -35,7 +35,7 @@ loop:
 			nextPath = append(path, next)
 		}
 
-		sum += allPossiblePathsVisitOnceWithUniquePathArray(next, exits, nextPath...)
+		sum += allPossiblePathsVisitOnceWithUniquePathArray(next, exits, nextPath)
 	}
 	return sum
 }
