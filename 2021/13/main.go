@@ -48,9 +48,9 @@ func day13(file util.File) int {
 	for i := 0; i < lastY; i++ {
 		for j := 0; j < lastX; j++ {
 			if _, exists := points[point{j, i}]; exists {
-				fmt.Printf("%v", "#")
+				fmt.Printf("%v", "██")
 			} else {
-				fmt.Printf("%v", ".")
+				fmt.Printf("%v", "  ")
 			}
 		}
 		fmt.Printf("\n")
