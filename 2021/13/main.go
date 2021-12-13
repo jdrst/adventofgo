@@ -16,7 +16,7 @@ func main() {
 	day13(util.ReadFile("input.txt"))
 }
 
-func day13(file util.File) int {
+func day13(file util.File) {
 	parts := strings.Split(string(file), util.NewLine()+util.NewLine())
 	lines := strings.Split(parts[0], util.NewLine())
 	folds := strings.Split(parts[1], util.NewLine())
@@ -37,7 +37,7 @@ func day13(file util.File) int {
 		case "y":
 			lastY = pos
 		}
-		points = foldAlong(axis, pos, points)
+		foldAlong(axis, pos, points)
 		if i == 0 {
 			fmt.Printf("First part: %v\n", len(points))
 		}
@@ -55,43 +55,34 @@ func day13(file util.File) int {
 		}
 		fmt.Printf("\n")
 	}
-	return len(points)
 }
 
-func foldAlong(axis string, pos int, points map[point]bool) map[point]bool {
+func foldAlong(axis string, pos int, points map[point]bool) {
 	switch axis {
 	case "x":
-		return foldAlongX(pos, points)
+		foldAlongX(pos, points)
 	case "y":
-		return foldAlongY(pos, points)
+		foldAlongY(pos, points)
 	default:
 		log.Fatal("can't fold")
-		return nil
+
 	}
 }
 
-func foldAlongX(pos int, points map[point]bool) map[point]bool {
-	res := map[point]bool{}
+func foldAlongX(pos int, points map[point]bool) {
 	for p := range points {
 		if p.x > pos {
-			res[point{x: pos - (p.x - pos), y: p.y}] = true
-		}
-		if p.x < pos {
-			res[p] = true
+			delete(points, p)
+			points[point{x: pos - (p.x - pos), y: p.y}] = true
 		}
 	}
-	return res
 }
 
-func foldAlongY(pos int, points map[point]bool) map[point]bool {
-	res := map[point]bool{}
+func foldAlongY(pos int, points map[point]bool) {
 	for p := range points {
 		if p.y > pos {
-			res[point{x: p.x, y: pos - (p.y - pos)}] = true
-		}
-		if p.y < pos {
-			res[p] = true
+			delete(points, p)
+			points[point{x: p.x, y: pos - (p.y - pos)}] = true
 		}
 	}
-	return res
 }
