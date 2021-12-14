@@ -47,7 +47,6 @@ func polymerizate(file util.File, steps int) int {
 	counts := map[rune]int{}
 	for k, v := range pairs {
 		counts[rune(k[0])] += v
-		counts[rune(k[1])] += v
 	}
 
 	max, min := math.MinInt, math.MaxInt
@@ -61,7 +60,7 @@ func polymerizate(file util.File, steps int) int {
 		}
 	}
 
-	return (max-min)/2 + 1
+	return max - min + 1
 }
 
 func partTwo(file util.File) int {
