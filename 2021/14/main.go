@@ -60,6 +60,7 @@ func polymerizate(file util.File, steps int) int {
 		}
 	}
 
+	// plus 1 because the last element is not accounted for
 	return max - min + 1
 }
 
