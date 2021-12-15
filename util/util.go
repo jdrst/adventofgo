@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-//returns "\n" for non-windows and "\r\n" for windows runtime
+//NewLine returns "\n" for non-windows and "\r\n" for windows runtime
 func NewLine() string {
 	if runtime.GOOS == "windows" {
 		return "\r\n"

@@ -34,18 +34,17 @@ func TestAsLines(t *testing.T) {
 	}
 }
 
-var subSplitTestCases = []struct {
-	line      Line
-	expected  Lines
-	separator string
-}{
-	{Line("test,test2"), Lines{"test", "test2"}, ","},
-	{Line("abc;;def"), Lines{"abc", "def"}, ";;"},
-	{Line("test\ntest2"), Lines{"test", "test2"}, "\n"},
-	{Line("test\x33Xestest2"), Lines{"test", "test2"}, "\x33Xes"},
-}
-
 func TestSubSplitWith(t *testing.T) {
+	var subSplitTestCases = []struct {
+		line      Line
+		expected  Lines
+		separator string
+	}{
+		{Line("test,test2"), Lines{"test", "test2"}, ","},
+		{Line("abc;;def"), Lines{"abc", "def"}, ";;"},
+		{Line("test\ntest2"), Lines{"test", "test2"}, "\n"},
+		{Line("test\x33Xestest2"), Lines{"test", "test2"}, "\x33Xes"},
+	}
 	for _, test := range subSplitTestCases {
 		actual := test.line.SubSplitWith(test.separator)
 		if !reflect.DeepEqual(actual, test.expected) {
@@ -96,18 +95,17 @@ func TestAs2DInts(t *testing.T) {
 	}
 }
 
-var NeighbourTestCases = []struct {
-	point      Point
-	maxX, maxY int
-	expected   []Point
-}{
-	{Point{1, 1}, 2, 2, []Point{{0, 1}, {2, 1}, {1, 0}, {1, 2}}},
-	{Point{1, 1}, 1, 1, []Point{{0, 1}, {1, 0}}},
-	{Point{0, 0}, 2, 2, []Point{{1, 0}, {0, 1}}},
-	{Point{0, 4}, 2, 5, []Point{{1, 4}, {0, 3}, {0, 5}}},
-}
-
 func TestNeighbours(t *testing.T) {
+	var NeighbourTestCases = []struct {
+		point      Point
+		maxX, maxY int
+		expected   []Point
+	}{
+		{Point{1, 1}, 2, 2, []Point{{0, 1}, {2, 1}, {1, 0}, {1, 2}}},
+		{Point{1, 1}, 1, 1, []Point{{0, 1}, {1, 0}}},
+		{Point{0, 0}, 2, 2, []Point{{1, 0}, {0, 1}}},
+		{Point{0, 4}, 2, 5, []Point{{1, 4}, {0, 3}, {0, 5}}},
+	}
 	for _, test := range NeighbourTestCases {
 		actual := test.point.Neighbours(test.maxX, test.maxY)
 		if !reflect.DeepEqual(actual, test.expected) {
@@ -116,18 +114,17 @@ func TestNeighbours(t *testing.T) {
 	}
 }
 
-var NeighboursWithDiagonalTestCases = []struct {
-	point      Point
-	maxX, maxY int
-	expected   []Point
-}{
-	{Point{1, 1}, 2, 2, []Point{{0, 1}, {0, 2}, {2, 1}, {2, 0}, {1, 0}, {0, 0}, {1, 2}, {2, 2}}},
-	{Point{1, 1}, 1, 1, []Point{{0, 1}, {1, 0}, {0, 0}}},
-	{Point{0, 0}, 2, 2, []Point{{1, 0}, {0, 1}, {1, 1}}},
-	{Point{0, 4}, 2, 5, []Point{{1, 4}, {1, 3}, {0, 3}, {0, 5}, {1, 5}}},
-}
-
 func TestNeighboursWithDiagonal(t *testing.T) {
+	var NeighboursWithDiagonalTestCases = []struct {
+		point      Point
+		maxX, maxY int
+		expected   []Point
+	}{
+		{Point{1, 1}, 2, 2, []Point{{0, 1}, {0, 2}, {2, 1}, {2, 0}, {1, 0}, {0, 0}, {1, 2}, {2, 2}}},
+		{Point{1, 1}, 1, 1, []Point{{0, 1}, {1, 0}, {0, 0}}},
+		{Point{0, 0}, 2, 2, []Point{{1, 0}, {0, 1}, {1, 1}}},
+		{Point{0, 4}, 2, 5, []Point{{1, 4}, {1, 3}, {0, 3}, {0, 5}, {1, 5}}},
+	}
 	for _, test := range NeighboursWithDiagonalTestCases {
 		actual := test.point.NeighboursWithDiagonal(test.maxX, test.maxY)
 		if !reflect.DeepEqual(actual, test.expected) {
@@ -136,21 +133,20 @@ func TestNeighboursWithDiagonal(t *testing.T) {
 	}
 }
 
-var ManhattanDistanceTestCases = []struct {
-	first, second Point
-	expected      int
-}{
-	{Point{1, 1}, Point{4, 4}, 6},
-	{Point{-1, -1}, Point{-4, -4}, 6},
-	{Point{1, 1}, Point{-4, -4}, 10},
-	{Point{0, 1}, Point{4, 4}, 7},
-	{Point{4, 2}, Point{4, 2}, 0},
-	{Point{0, 100}, Point{100, 10000}, 10000},
-	{Point{42, 1337}, Point{666, 31337}, 30624},
-	{Point{-42, 1337}, Point{666, -31337}, 33382},
-}
-
 func TestManhattanDistance(t *testing.T) {
+	var ManhattanDistanceTestCases = []struct {
+		first, second Point
+		expected      int
+	}{
+		{Point{1, 1}, Point{4, 4}, 6},
+		{Point{-1, -1}, Point{-4, -4}, 6},
+		{Point{1, 1}, Point{-4, -4}, 10},
+		{Point{0, 1}, Point{4, 4}, 7},
+		{Point{4, 2}, Point{4, 2}, 0},
+		{Point{0, 100}, Point{100, 10000}, 10000},
+		{Point{42, 1337}, Point{666, 31337}, 30624},
+		{Point{-42, 1337}, Point{666, -31337}, 33382},
+	}
 	for _, test := range ManhattanDistanceTestCases {
 		actual := ManhattanDistance(test.first, test.second)
 		if actual != test.expected {
