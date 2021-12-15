@@ -23,7 +23,7 @@ var testInput2 = `19999
 
 func TestDijsktra(t *testing.T) {
 	expected := 8
-	actual := dijkstra(toCavern(util.File(testInput2).WithOSLinebreaks().AsLines()))
+	actual := dijkstra(util.File(testInput2).WithOSLinebreaks().AsLines().As2DInts(""))
 	if actual != expected {
 		t.Errorf("\nexpected was: %v\nactual is: %v", expected, actual)
 	}
@@ -72,7 +72,7 @@ func BenchmarkPartTwo(b *testing.B) {
 }
 
 func TestMakeCavern(t *testing.T) {
-	expected := toCavern(util.File(testCavern).WithOSLinebreaks().AsLines())
+	expected := util.File(testCavern).WithOSLinebreaks().AsLines().As2DInts("")
 	actual := makeCavern(util.File(testInput).WithOSLinebreaks().AsLines())
 	for i, l := range expected {
 		for j := range l {
