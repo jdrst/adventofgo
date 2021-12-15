@@ -25,6 +25,10 @@ type Lines []Line
 //Line is a string
 type Line string
 
+type Point struct {
+	X, Y int
+}
+
 //ReadFile reads a file into the File struct ([]byte) and calls log.Fatal on an error
 func ReadFile(path string) File {
 	input, err := os.ReadFile(path)
@@ -82,4 +86,22 @@ func ToInt(s string) int {
 	i, err := strconv.Atoi(s)
 	Handle(err)
 	return i
+}
+
+//Neighbours returns direct neighbours on x and y axis, no diagonal neighbours
+func (n *Point) Neighbours(maxX, maxY int) []Point {
+	res := make([]Point, 0)
+	if n.X > 0 {
+		res = append(res, Point{n.X - 1, n.Y})
+	}
+	if n.X < maxX {
+		res = append(res, Point{n.X + 1, n.Y})
+	}
+	if n.Y > 0 {
+		res = append(res, Point{n.X, n.Y - 1})
+	}
+	if n.Y < maxY {
+		res = append(res, Point{n.X, n.Y + 1})
+	}
+	return res
 }
