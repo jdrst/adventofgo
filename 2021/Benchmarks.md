@@ -46,5 +46,7 @@ BenchmarkPartTwo-12 | 10000 | 107143 ns/op | 106241 B/op | 2003 allocs/op |
 | BenchmarkPartOne-12 | 6590 | 170479 ns/op | 101969 B/op | 1738 allocs/op |
 | BenchmarkPartTwo-12 | 2037 | 580833 ns/op | 351074 B/op | 6345 allocs/op |
 | __Day 15__ |||||
-| BenchmarkPartOne-12 | 606 | 2056428 ns/op | 2014525 B/op | 40510 allocs/op |
-| BenchmarkPartTwo-12 | 21 | 54149362 ns/op | 40777830 B/op | 1001713 allocs/op |
+| BenchmarkPartOne-12 | 570 | 2073311 ns/op | 2014527 B/op | 40510 allocs/op |
+| BenchmarkPartTwo-12 | 20 | 55378550 ns/op | 40867453 B/op | 1001813 allocs/op |
+| BenchmarkPartOneManhattanDist-12 | 492 | 2429217 ns/op | 2159680 B/op | 44203 allocs/op |
+| BenchmarkPartTwoManhattanDist-12 | 19 | 61654211 ns/op | 42950726 B/op | 1059398 allocs/op |

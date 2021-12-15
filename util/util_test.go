@@ -135,3 +135,26 @@ func TestNeighboursWithDiagonal(t *testing.T) {
 		}
 	}
 }
+
+var ManhattanDistanceTestCases = []struct {
+	first, second Point
+	expected      int
+}{
+	{Point{1, 1}, Point{4, 4}, 6},
+	{Point{-1, -1}, Point{-4, -4}, 6},
+	{Point{1, 1}, Point{-4, -4}, 10},
+	{Point{0, 1}, Point{4, 4}, 7},
+	{Point{4, 2}, Point{4, 2}, 0},
+	{Point{0, 100}, Point{100, 10000}, 10000},
+	{Point{42, 1337}, Point{666, 31337}, 30624},
+	{Point{-42, 1337}, Point{666, -31337}, 33382},
+}
+
+func TestManhattanDistance(t *testing.T) {
+	for _, test := range ManhattanDistanceTestCases {
+		actual := ManhattanDistance(test.first, test.second)
+		if actual != test.expected {
+			t.Errorf("expected was: %v \n actual is: %v", test.expected, actual)
+		}
+	}
+}

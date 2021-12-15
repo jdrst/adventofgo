@@ -21,9 +21,9 @@ var testInput2 = `19999
 19111
 11191`
 
-func TestDijsktra(t *testing.T) {
+func TestAStar(t *testing.T) {
 	expected := 8
-	actual := dijkstra(util.File(testInput2).WithOSLinebreaks().AsLines().As2DInts(""))
+	actual := astar(util.File(testInput2).WithOSLinebreaks().AsLines().As2DInts(""), util.Point{X: 0, Y: 0}, util.Point{X: 2, Y: 4}, func(a, b util.Point) int { return 0 })
 	if actual != expected {
 		t.Errorf("\nexpected was: %v\nactual is: %v", expected, actual)
 	}
@@ -43,6 +43,20 @@ func TestPartOne(t *testing.T) {
 	}
 }
 
+func TestPartOneManhattanDist(t *testing.T) {
+	expected := 40
+	actual := partOneManhattanDist(util.File(testInput).WithOSLinebreaks())
+	if actual != expected {
+		t.Errorf("expected was: %v \n actual is: %v", expected, actual)
+	}
+
+	expected = 373
+	actual = partOneManhattanDist(util.ReadFile("input.txt"))
+	if actual != expected {
+		t.Errorf("expected was: %v \n actual is: %v", expected, actual)
+	}
+}
+
 func TestPartTwo(t *testing.T) {
 	expected := 315
 	actual := partTwo(util.File(testInput).WithOSLinebreaks())
@@ -52,6 +66,20 @@ func TestPartTwo(t *testing.T) {
 
 	expected = 2868
 	actual = partTwo(util.ReadFile("input.txt"))
+	if actual != expected {
+		t.Errorf("\nexpected was: %v\nactual is: %v", expected, actual)
+	}
+}
+
+func TestPartTwoManhattanDist(t *testing.T) {
+	expected := 315
+	actual := partTwoManhattanDist(util.File(testInput).WithOSLinebreaks())
+	if actual != expected {
+		t.Errorf("\nexpected was: %v\nactual is: %v", expected, actual)
+	}
+
+	expected = 2868
+	actual = partTwoManhattanDist(util.ReadFile("input.txt"))
 	if actual != expected {
 		t.Errorf("\nexpected was: %v\nactual is: %v", expected, actual)
 	}
@@ -68,6 +96,20 @@ func BenchmarkPartTwo(b *testing.B) {
 	input := util.ReadFile("input.txt")
 	for n := 0; n < b.N; n++ {
 		partTwo(input)
+	}
+}
+
+func BenchmarkPartOneManhattanDist(b *testing.B) {
+	input := util.ReadFile("input.txt")
+	for n := 0; n < b.N; n++ {
+		partOneManhattanDist(input)
+	}
+}
+
+func BenchmarkPartTwoManhattanDist(b *testing.B) {
+	input := util.ReadFile("input.txt")
+	for n := 0; n < b.N; n++ {
+		partTwoManhattanDist(input)
 	}
 }
 
