@@ -76,6 +76,16 @@ func (lines Lines) AsInts() []int {
 	return res
 }
 
+//As2DInts converts Lines ([]string) to [][]int, splitting the line on the given separator
+func (lines Lines) As2DInts(separator string) [][]int {
+	res := make([][]int, len(lines))
+
+	for i, l := range lines {
+		res[i] = l.SubSplitWith(separator).AsInts()
+	}
+	return res
+}
+
 //AsInt converts a line to int and calls log.Fatal on an error
 func (l Line) AsInt() int {
 	return ToInt(string(l))
@@ -88,7 +98,7 @@ func ToInt(s string) int {
 	return i
 }
 
-//Neighbours returns direct neighbours on x and y axis, no diagonal neighbours
+//Neighbours returns direct neighbours on x and y axis (no diagonal neighbours)
 func (n *Point) Neighbours(maxX, maxY int) []Point {
 	res := make([]Point, 0)
 	if n.X > 0 {
@@ -102,6 +112,36 @@ func (n *Point) Neighbours(maxX, maxY int) []Point {
 	}
 	if n.Y < maxY {
 		res = append(res, Point{n.X, n.Y + 1})
+	}
+	return res
+}
+
+//Neighbours returns direct neighbours on x and y axis as well as diagonal neighbours
+func (n *Point) NeighboursWithDiagonal(maxX, maxY int) []Point {
+	res := make([]Point, 0)
+	if n.X > 0 {
+		res = append(res, Point{n.X - 1, n.Y})
+		if n.Y < maxY {
+			res = append(res, Point{n.X - 1, n.Y + 1})
+		}
+	}
+	if n.X < maxX {
+		res = append(res, Point{n.X + 1, n.Y})
+		if n.Y > 0 {
+			res = append(res, Point{n.X + 1, n.Y - 1})
+		}
+	}
+	if n.Y > 0 {
+		res = append(res, Point{n.X, n.Y - 1})
+		if n.X > 0 {
+			res = append(res, Point{n.X - 1, n.Y - 1})
+		}
+	}
+	if n.Y < maxY {
+		res = append(res, Point{n.X, n.Y + 1})
+		if n.X < maxX {
+			res = append(res, Point{n.X + 1, n.Y + 1})
+		}
 	}
 	return res
 }

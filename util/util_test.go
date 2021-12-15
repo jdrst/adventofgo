@@ -84,3 +84,54 @@ func TestToInt(t *testing.T) {
 		t.Errorf("expected was: %v \n actual is: %v", expected, actual)
 	}
 }
+
+func TestAs2DInts(t *testing.T) {
+	lines := Lines{"1,2", "2,3", "3,4,5", "4,5"}
+	expected := [][]int{{1, 2}, {2, 3}, {3, 4, 5}, {4, 5}}
+
+	actual := lines.As2DInts(",")
+
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("expected was: %v \n actual is: %v", expected, actual)
+	}
+}
+
+var NeighbourTestCases = []struct {
+	point      Point
+	maxX, maxY int
+	expected   []Point
+}{
+	{Point{1, 1}, 2, 2, []Point{{0, 1}, {2, 1}, {1, 0}, {1, 2}}},
+	{Point{1, 1}, 1, 1, []Point{{0, 1}, {1, 0}}},
+	{Point{0, 0}, 2, 2, []Point{{1, 0}, {0, 1}}},
+	{Point{0, 4}, 2, 5, []Point{{1, 4}, {0, 3}, {0, 5}}},
+}
+
+func TestNeighbours(t *testing.T) {
+	for _, test := range NeighbourTestCases {
+		actual := test.point.Neighbours(test.maxX, test.maxY)
+		if !reflect.DeepEqual(actual, test.expected) {
+			t.Errorf("expected was: %v \n actual is: %v", test.expected, actual)
+		}
+	}
+}
+
+var NeighboursWithDiagonalTestCases = []struct {
+	point      Point
+	maxX, maxY int
+	expected   []Point
+}{
+	{Point{1, 1}, 2, 2, []Point{{0, 1}, {0, 2}, {2, 1}, {2, 0}, {1, 0}, {0, 0}, {1, 2}, {2, 2}}},
+	{Point{1, 1}, 1, 1, []Point{{0, 1}, {1, 0}, {0, 0}}},
+	{Point{0, 0}, 2, 2, []Point{{1, 0}, {0, 1}, {1, 1}}},
+	{Point{0, 4}, 2, 5, []Point{{1, 4}, {1, 3}, {0, 3}, {0, 5}, {1, 5}}},
+}
+
+func TestNeighboursWithDiagonal(t *testing.T) {
+	for _, test := range NeighboursWithDiagonalTestCases {
+		actual := test.point.NeighboursWithDiagonal(test.maxX, test.maxY)
+		if !reflect.DeepEqual(actual, test.expected) {
+			t.Errorf("expected was: %v \n actual is: %v", test.expected, actual)
+		}
+	}
+}
