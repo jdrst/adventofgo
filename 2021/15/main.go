@@ -1,9 +1,9 @@
 package main
 
 import (
+	"container/heap"
 	"fmt"
 	"math"
-	"sort"
 
 	"github.com/jdrst/adventofgo/util"
 )
@@ -14,64 +14,42 @@ func main() {
 }
 
 type node struct {
-	x, y, weight int
-}
-
-func (n *node) neighbours(maxX, maxY int) []node {
-	res := make([]node, 0)
-	if n.x > 0 {
-		res = append(res, node{n.x - 1, n.y, 0})
-	}
-	if n.x < maxX {
-		res = append(res, node{n.x + 1, n.y, 0})
-	}
-	if n.y > 0 {
-		res = append(res, node{n.x, n.y - 1, 0})
-	}
-	if n.y < maxY {
-		res = append(res, node{n.x, n.y + 1, 0})
-	}
-	return res
+	p             util.Point
+	weight, index int
 }
 
 func dijkstra(cavern [][]int) int {
 	distances := make([][]int, len(cavern))
-	for i, l := range cavern {
-		distances[i] = make([]int, len(l))
-		for j := range l {
-			distances[i][j] = math.MaxInt
-		}
-	}
 	seen := make([][]bool, len(cavern))
 	for i, l := range cavern {
+		distances[i] = make([]int, len(l))
 		seen[i] = make([]bool, len(l))
 		for j := range l {
+			distances[i][j] = math.MaxInt
 			seen[i][j] = false
 		}
 	}
-	pq := []node{{0, 0, cavern[0][0]}}
+	pq := prioQueue{{util.Point{X: 0, Y: 0}, cavern[0][0], 0}}
 
 	distances[0][0] = cavern[0][0]
 
-	for len(pq) > 0 {
-		curr := pq[0]
-		if curr.x == len(cavern)-1 && curr.y == len(cavern[len(cavern)-1])-1 {
+	heap.Init(&pq)
+
+	for pq.Len() > 0 {
+		curr := heap.Pop(&pq).(*node)
+		if curr.p.X == len(cavern)-1 && curr.p.Y == len(cavern[len(cavern)-1])-1 {
 			break
 		}
-		pq = pq[1:]
-		seen[curr.x][curr.y] = true
-		for _, next := range curr.neighbours(len(cavern)-1, len(cavern[curr.x])-1) {
-			if seen[next.x][next.y] {
+		seen[curr.p.X][curr.p.Y] = true
+		for _, next := range curr.p.Neighbours(len(cavern)-1, len(cavern[curr.p.X])-1) {
+			if seen[next.X][next.Y] {
 				continue
 			}
-			if distances[next.x][next.y] > distances[curr.x][curr.y]+cavern[next.x][next.y] {
-				distances[next.x][next.y] = distances[curr.x][curr.y] + cavern[next.x][next.y]
-				pq = append(pq, node{next.x, next.y, distances[next.x][next.y]})
+			if distances[next.X][next.Y] > distances[curr.p.X][curr.p.Y]+cavern[next.X][next.Y] {
+				distances[next.X][next.Y] = distances[curr.p.X][curr.p.Y] + cavern[next.X][next.Y]
+				heap.Push(&pq, &node{p: next, weight: distances[next.X][next.Y]})
 			}
 		}
-		sort.Slice(pq, func(i, j int) bool {
-			return pq[i].weight < pq[j].weight
-		})
 	}
 
 	return distances[len(cavern)-1][len(cavern[len(cavern)-1])-1] - cavern[0][0]
@@ -82,33 +60,7 @@ func partOne(file util.File) int {
 
 	cavern := toCavern(lines)
 
-	return lowestRisk(cavern)
-}
-
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
-
-func lowestRisk(cavern [][]int) int {
-
-	for i := 1; i < len(cavern[0]); i++ {
-		cavern[0][i] += cavern[0][i-1]
-	}
-
-	for i := 1; i < len(cavern); i++ {
-		cavern[i][0] += cavern[i-1][0]
-	}
-
-	for i := 1; i < len(cavern); i++ {
-		for j := 1; j < len(cavern[i]); j++ {
-			cavern[i][j] += min(cavern[i][j-1], cavern[i-1][j])
-		}
-	}
-
-	return cavern[len(cavern)-1][len(cavern[len(cavern)-1])-1] - cavern[0][0]
+	return dijkstra(cavern)
 }
 
 func partTwo(file util.File) int {
@@ -172,4 +124,35 @@ func makeCavern(lines util.Lines) [][]int {
 	}
 
 	return cavern
+}
+
+type prioQueue []*node
+
+func (pq prioQueue) Len() int { return len(pq) }
+
+func (pq prioQueue) Less(i, j int) bool {
+	return pq[i].weight < pq[j].weight
+}
+
+func (pq prioQueue) Swap(i, j int) {
+	pq[i], pq[j] = pq[j], pq[i]
+	pq[i].index = i
+	pq[j].index = j
+}
+
+func (pq *prioQueue) Push(new interface{}) {
+	n := len(*pq)
+	item := new.(*node)
+	item.index = n
+	*pq = append(*pq, item)
+}
+
+func (pq *prioQueue) Pop() interface{} {
+	old := *pq
+	n := len(old)
+	item := old[n-1]
+	old[n-1] = nil
+	item.index = -1
+	*pq = old[0 : n-1]
+	return item
 }
