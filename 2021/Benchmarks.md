@@ -50,3 +50,6 @@ BenchmarkPartTwo-12 | 10000 | 107143 ns/op | 106241 B/op | 2003 allocs/op |
 | BenchmarkPartTwo-12 | 20 | 55378550 ns/op | 40867453 B/op | 1001813 allocs/op |
 | BenchmarkPartOneManhattanDist-12 | 492 | 2429217 ns/op | 2159680 B/op | 44203 allocs/op |
 | BenchmarkPartTwoManhattanDist-12 | 19 | 61654211 ns/op | 42950726 B/op | 1059398 allocs/op |
+| __Day 16__ |||||
+| BenchmarkPartOne-12 | 9498 | 125177 ns/op | 32167 B/op | 2705 allocs/op |
+| BenchmarkPartTwo-12 | 8000 | 145456 ns/op | 44422 B/op | 3229 allocs/op |
