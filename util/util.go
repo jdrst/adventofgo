@@ -148,15 +148,15 @@ func (n *Point) NeighboursWithDiagonal(maxX, maxY int) []Point {
 
 //ManhattanDistance returns the manhattan distance between two points (delta between x's plus delta between y's)
 func ManhattanDistance(a, b Point) int {
-	return delta(a.X, b.X) + delta(a.Y, b.Y)
+	return Delta(a.X, b.X) + Delta(a.Y, b.Y)
 }
 
-func abs(x int) int {
+func Abs(x int) int {
 	if x < 0 {
 		return x * -1
 	}
 	return x
 }
-func delta(x, y int) int {
-	return abs(x - y)
+func Delta(x, y int) int {
+	return Abs(x - y)
 }
