@@ -53,3 +53,5 @@ BenchmarkPartTwo-12 | 10000 | 107143 ns/op | 106241 B/op | 2003 allocs/op |
 | __Day 16__ |||||
 | BenchmarkPartOne-12 | 9498 | 125177 ns/op | 32167 B/op | 2705 allocs/op |
 | BenchmarkPartTwo-12 | 8000 | 145456 ns/op | 44422 B/op | 3229 allocs/op |
+| __Day 17__ |||||
+| __No access to benchmarking machine__ |||||
