@@ -14,11 +14,23 @@ func TestPartOne(t *testing.T) {
 	if actual != expected {
 		t.Errorf("expected was: %v \n actual is: %v", expected, actual)
 	}
+
+	expected = 2850
+	actual = partOne(util.ReadFile("input.txt"))
+	if actual != expected {
+		t.Errorf("\nexpected was: %v\nactual is: %v", expected, actual)
+	}
 }
 
 func TestPartTwo(t *testing.T) {
 	expected := 112
 	actual := partTwo(util.File(testInput).WithOSLinebreaks())
+	if actual != expected {
+		t.Errorf("\nexpected was: %v\nactual is: %v", expected, actual)
+	}
+
+	expected = 1117
+	actual = partTwo(util.ReadFile("input.txt"))
 	if actual != expected {
 		t.Errorf("\nexpected was: %v\nactual is: %v", expected, actual)
 	}
