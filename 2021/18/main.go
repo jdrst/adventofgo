@@ -91,26 +91,24 @@ func (num *sfnum) magnitude() *int {
 
 func (num *sfnum) explode() {
 	// fmt.Printf("exploding [%v,%v]\n", *num.first, *num.second)
+	setNum := func(num *sfnum, add *int, isLeft bool) {
+		if num != nil {
+			if isLeft {
+				new := *num.first + *add
+				num.first = &new
+			} else {
+				new := *num.second + *add
+				num.second = &new
+			}
+		}
+	}
+
 	left, isLeft := findRegularLeft(num)
-	if left != nil {
-		if isLeft {
-			new := *left.first + *num.first
-			left.first = &new
-		} else {
-			new := *left.second + *num.first
-			left.second = &new
-		}
-	}
+	setNum(left, num.first, isLeft)
+
 	right, isLeft := findRegularRight(num)
-	if right != nil {
-		if isLeft {
-			new := *right.first + *num.second
-			right.first = &new
-		} else {
-			new := *right.second + *num.second
-			right.second = &new
-		}
-	}
+	setNum(right, num.second, isLeft)
+
 	null := 0
 	if num.parent.left == num {
 		num.parent.first = &null
@@ -147,44 +145,44 @@ func (num *sfnum) reduce() {
 explode:
 	for noResult {
 		// fmt.Println(num)
-		noResult = num.explodeRecursive(0)
+		noResult = num.tryExplode(0)
 	}
 	noResult = true
 	for noResult {
 		// fmt.Println(num)
-		noResult = num.splitRecursive()
+		noResult = num.trySplit()
 		if noResult {
 			goto explode
 		}
 	}
 }
 
-func (num *sfnum) explodeRecursive(depth int) bool {
+func (num *sfnum) tryExplode(depth int) bool {
 	res := false
 	if depth > 3 {
 		num.explode()
 		return true
 	}
 	if num.left != nil {
-		res = num.left.explodeRecursive(depth + 1)
+		res = num.left.tryExplode(depth + 1)
 	}
 	if !res && num.right != nil {
-		res = num.right.explodeRecursive(depth + 1)
+		res = num.right.tryExplode(depth + 1)
 	}
 	return res
 }
 
-func (num *sfnum) splitRecursive() bool {
+func (num *sfnum) trySplit() bool {
 	res := false
 	if num.left != nil {
-		res = num.left.splitRecursive()
+		res = num.left.trySplit()
 	}
 	if !res && num.first != nil && *num.first > 9 {
 		num.split(true)
 		return true
 	}
 	if !res && num.right != nil {
-		res = num.right.splitRecursive()
+		res = num.right.trySplit()
 	}
 	if !res && num.second != nil && *num.second > 9 {
 		num.split(false)
