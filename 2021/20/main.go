@@ -51,35 +51,19 @@ func enhanceXTimes(x int, image [][]bool, algorithm string) int {
 }
 
 func enhance(image [][]bool, algorithm string, outerPx bool) [][]bool {
-	image = expand(image, outerPx)
 
-	new := make([][]bool, len(image))
-	for i, l := range image {
-		new[i] = make([]bool, len(l))
+	new := make([][]bool, len(image)+2)
+	for i := range new {
+		new[i] = make([]bool, len(image[0])+2)
 	}
 
-	for i, l := range image {
+	for i, l := range new {
 		for j := range l {
-			idx := getNewPixel(image, i, j, outerPx)
+			idx := getNewPixel(image, i-1, j-1, outerPx)
 			if algorithm[idx] == '#' {
 				new[i][j] = true
 			}
 		}
-	}
-	return new
-}
-
-func expand(image [][]bool, with bool) [][]bool {
-	//todo, expanding with append?
-	new := make([][]bool, len(image)+2)
-	new[0] = make([]bool, len(image[0])+2)
-	new[len(new)-1] = make([]bool, len(image[0])+2)
-	for i := range new[0] {
-		new[0][i] = with
-		new[len(new)-1][i] = with
-	}
-	for i := range image {
-		new[i+1] = append([]bool{with}, append(image[i], with)...)
 	}
 	return new
 }
