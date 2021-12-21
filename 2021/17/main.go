@@ -13,7 +13,7 @@ func main() {
 }
 
 type trajectory struct {
-	xTrajectory, yTrajectory, time int
+	yTrajectory, time int
 }
 
 func partOne(file util.File) int {
