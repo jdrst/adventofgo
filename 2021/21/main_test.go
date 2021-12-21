@@ -29,6 +29,12 @@ func TestPartTwo(t *testing.T) {
 	if actual != expected {
 		t.Errorf("\nexpected was: %v\nactual is: %v", expected, actual)
 	}
+
+	expected = 306719685234774
+	actual = partTwo(util.ReadFile("input.txt"))
+	if actual != expected {
+		t.Errorf("\nexpected was: %v\nactual is: %v", expected, actual)
+	}
 }
 
 func BenchmarkPartOne(b *testing.B) {

@@ -16,7 +16,8 @@ type player struct {
 }
 
 type quantumPlayer struct {
-	space, points, universes int
+	p         player
+	universes int
 }
 
 type deterministicDie struct {
@@ -35,7 +36,7 @@ func partOne(file util.File) int {
 	die := deterministicDie{0, 0}
 	for playerOne.points < 1000 && playerTwo.points < 1000 {
 		roll := die.roll() + die.roll() + die.roll()
-		currentPlayer.move(roll, 0)
+		currentPlayer.move(roll)
 		if *currentPlayer == playerOne {
 			currentPlayer = &playerTwo
 		} else {
@@ -54,8 +55,8 @@ func partTwo(file util.File) int {
 	var p1, p1space, p2, p2space int
 	fmt.Sscanf(string(lines[0]), "Player %v starting position: %v", &p1, &p1space)
 	fmt.Sscanf(string(lines[1]), "Player %v starting position: %v", &p2, &p2space)
-	playerOne := quantumPlayer{p1space, 0, 1}
-	playerTwo := quantumPlayer{p2space, 0, 1}
+	playerOne := quantumPlayer{player{p1space, 0}, 1}
+	playerTwo := quantumPlayer{player{p2space, 0}, 1}
 
 	p1wins, p2wins := quantumDieGame(playerOne, playerTwo, true)
 
@@ -65,21 +66,16 @@ func partTwo(file util.File) int {
 	return p2wins
 }
 
-func (p *player) move(steps int, universes int) player {
+func (p *player) move(steps int) {
 	p.space = (p.space + steps) % 10
 	if p.space == 0 {
 		p.space = 10
 	}
 	p.points += p.space
-	return *p
 }
 
 func (p quantumPlayer) move(steps int, universes int) quantumPlayer {
-	p.space = (p.space + steps) % 10
-	if p.space == 0 {
-		p.space = 10
-	}
-	p.points += p.space
+	p.p.move(steps)
 	p.universes *= universes
 	return p
 }
@@ -94,7 +90,7 @@ func (d *deterministicDie) roll() int {
 }
 
 func quantumDieGame(current, other quantumPlayer, p1Turn bool) (p1win int, p2win int) {
-	if other.points > 20 {
+	if other.p.points > 20 {
 		if p1Turn {
 			return 0, other.universes * current.universes
 		}
