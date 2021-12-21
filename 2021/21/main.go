@@ -21,9 +21,9 @@ type deterministicDie struct {
 
 func partOne(file util.File) int {
 	lines := file.AsLines()
-	var p1, p1space, p2, p2space int
-	fmt.Sscanf(string(lines[0]), "Player %v starting position: %v", &p1, &p1space)
-	fmt.Sscanf(string(lines[1]), "Player %v starting position: %v", &p2, &p2space)
+	var p1space, p2space int
+	fmt.Sscanf(string(lines[0]), "Player 1 starting position: %v", &p1space)
+	fmt.Sscanf(string(lines[1]), "Player 2 starting position: %v", &p2space)
 	playerOne := player{space: p1space, points: 0}
 	playerTwo := player{space: p2space, points: 0}
 	p1Turn := true
@@ -46,9 +46,9 @@ func partOne(file util.File) int {
 
 func partTwo(file util.File) int {
 	lines := file.AsLines()
-	var p1, p1space, p2, p2space int
-	fmt.Sscanf(string(lines[0]), "Player %v starting position: %v", &p1, &p1space)
-	fmt.Sscanf(string(lines[1]), "Player %v starting position: %v", &p2, &p2space)
+	var p1space, p2space int
+	fmt.Sscanf(string(lines[0]), "Player 1 starting position: %v", &p1space)
+	fmt.Sscanf(string(lines[1]), "Player 2 starting position: %v", &p2space)
 	playerOne := player{p1space, 0}
 	playerTwo := player{p2space, 0}
 
