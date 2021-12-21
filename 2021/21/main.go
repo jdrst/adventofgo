@@ -19,6 +19,10 @@ type deterministicDie struct {
 	rolls int
 }
 
+type diracDieGame struct {
+	cache map[[4]int][2]int
+}
+
 func partOne(file util.File) int {
 	lines := file.AsLines()
 	var p1space, p2space int
@@ -50,7 +54,8 @@ func partTwo(file util.File) int {
 	fmt.Sscanf(string(lines[0]), "Player 1 starting position: %v", &p1space)
 	fmt.Sscanf(string(lines[1]), "Player 2 starting position: %v", &p2space)
 
-	wins := quantumDieGame(p1space-1, p2space-1, 0, 0)
+	game := diracDieGame{cache: map[[4]int][2]int{}}
+	wins := game.play(p1space-1, p2space-1, 0, 0)
 
 	if wins[0] > wins[1] {
 		return wins[0]
@@ -76,7 +81,7 @@ func (d *deterministicDie) roll() int {
 	return d.side
 }
 
-func quantumDieGame(currentPos, otherPos, currentPoints, otherPoints int) [2]int {
+func (d *diracDieGame) play(currentPos, otherPos, currentPoints, otherPoints int) [2]int {
 	if currentPoints > 20 {
 		return [2]int{1, 0}
 	}
@@ -84,7 +89,7 @@ func quantumDieGame(currentPos, otherPos, currentPoints, otherPoints int) [2]int
 		return [2]int{0, 1}
 	}
 
-	if res, exists := cache[[4]int{currentPos, otherPos, currentPoints, otherPoints}]; exists {
+	if res, exists := d.cache[[4]int{currentPos, otherPos, currentPoints, otherPoints}]; exists {
 		return res
 	}
 
@@ -92,14 +97,13 @@ func quantumDieGame(currentPos, otherPos, currentPoints, otherPoints int) [2]int
 	for roll, additional := range quantumDieOutcomes {
 		newPos := (currentPos + roll) % 10
 		newPoints := currentPoints + newPos + 1
-		wins := quantumDieGame(otherPos, newPos, otherPoints, newPoints)
+		wins := d.play(otherPos, newPos, otherPoints, newPoints)
 		res[0] += wins[1] * additional
 		res[1] += wins[0] * additional
 	}
 
-	cache[[4]int{currentPos, otherPos, currentPoints, otherPoints}] = res
+	d.cache[[4]int{currentPos, otherPos, currentPoints, otherPoints}] = res
 	return res
 }
 
-var cache = map[[4]int][2]int{}
 var quantumDieOutcomes map[int]int = map[int]int{3: 1, 4: 3, 5: 6, 6: 7, 7: 6, 8: 3, 9: 1}
