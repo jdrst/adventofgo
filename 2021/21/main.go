@@ -14,12 +14,6 @@ func main() {
 type player struct {
 	space, points int
 }
-
-type quantumPlayer struct {
-	p         player
-	universes int
-}
-
 type deterministicDie struct {
 	side  int
 	rolls int
@@ -32,16 +26,16 @@ func partOne(file util.File) int {
 	fmt.Sscanf(string(lines[1]), "Player %v starting position: %v", &p2, &p2space)
 	playerOne := player{space: p1space, points: 0}
 	playerTwo := player{space: p2space, points: 0}
-	currentPlayer := &playerOne
+	p1Turn := true
 	die := deterministicDie{0, 0}
 	for playerOne.points < 1000 && playerTwo.points < 1000 {
 		roll := die.roll() + die.roll() + die.roll()
-		currentPlayer.move(roll)
-		if *currentPlayer == playerOne {
-			currentPlayer = &playerTwo
+		if p1Turn {
+			playerOne = playerOne.move(roll)
 		} else {
-			currentPlayer = &playerOne
+			playerTwo = playerTwo.move(roll)
 		}
+		p1Turn = !p1Turn
 	}
 
 	if playerOne.points > playerTwo.points {
@@ -55,10 +49,10 @@ func partTwo(file util.File) int {
 	var p1, p1space, p2, p2space int
 	fmt.Sscanf(string(lines[0]), "Player %v starting position: %v", &p1, &p1space)
 	fmt.Sscanf(string(lines[1]), "Player %v starting position: %v", &p2, &p2space)
-	playerOne := quantumPlayer{player{p1space, 0}, 1}
-	playerTwo := quantumPlayer{player{p2space, 0}, 1}
+	playerOne := player{p1space, 0}
+	playerTwo := player{p2space, 0}
 
-	p1wins, p2wins := quantumDieGame(playerOne, playerTwo, true)
+	p1wins, p2wins := quantumDieGame(playerOne, playerTwo, true, 1)
 
 	if p1wins > p2wins {
 		return p1wins
@@ -66,17 +60,12 @@ func partTwo(file util.File) int {
 	return p2wins
 }
 
-func (p *player) move(steps int) {
+func (p player) move(steps int) player {
 	p.space = (p.space + steps) % 10
 	if p.space == 0 {
 		p.space = 10
 	}
 	p.points += p.space
-}
-
-func (p quantumPlayer) move(steps int, universes int) quantumPlayer {
-	p.p.move(steps)
-	p.universes *= universes
 	return p
 }
 
@@ -89,16 +78,16 @@ func (d *deterministicDie) roll() int {
 	return d.side
 }
 
-func quantumDieGame(current, other quantumPlayer, p1Turn bool) (p1win int, p2win int) {
-	if other.p.points > 20 {
+func quantumDieGame(current, other player, p1Turn bool, universes int) (p1win int, p2win int) {
+	if other.points > 20 {
 		if p1Turn {
-			return 0, other.universes * current.universes
+			return 0, universes
 		}
-		return other.universes * current.universes, 0
+		return universes, 0
 	}
 
-	for roll, universes := range quantumDieOutcomes {
-		p1wins, p2wins := quantumDieGame(other, current.move(roll, universes), !p1Turn)
+	for roll, additional := range quantumDieOutcomes {
+		p1wins, p2wins := quantumDieGame(other, current.move(roll), !p1Turn, universes*additional)
 		p1win += p1wins
 		p2win += p2wins
 	}
