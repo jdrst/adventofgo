@@ -49,15 +49,13 @@ func partTwo(file util.File) int {
 	var p1space, p2space int
 	fmt.Sscanf(string(lines[0]), "Player 1 starting position: %v", &p1space)
 	fmt.Sscanf(string(lines[1]), "Player 2 starting position: %v", &p2space)
-	playerOne := player{p1space, 0}
-	playerTwo := player{p2space, 0}
 
-	p1wins, p2wins := quantumDieGame(playerOne, playerTwo, true, 1)
+	wins := quantumDieGame(p1space-1, p2space-1, 0, 0)
 
-	if p1wins > p2wins {
-		return p1wins
+	if wins[0] > wins[1] {
+		return wins[0]
 	}
-	return p2wins
+	return wins[1]
 }
 
 func (p player) move(steps int) player {
@@ -78,21 +76,30 @@ func (d *deterministicDie) roll() int {
 	return d.side
 }
 
-func quantumDieGame(current, other player, p1Turn bool, universes int) (p1win int, p2win int) {
-	if other.points > 20 {
-		if p1Turn {
-			return 0, universes
-		}
-		return universes, 0
+func quantumDieGame(currentPos, otherPos, currentPoints, otherPoints int) [2]int {
+	if currentPoints > 20 {
+		return [2]int{1, 0}
+	}
+	if otherPoints > 20 {
+		return [2]int{0, 1}
 	}
 
+	if res, exists := cache[[4]int{currentPos, otherPos, currentPoints, otherPoints}]; exists {
+		return res
+	}
+
+	res := [2]int{0, 0}
 	for roll, additional := range quantumDieOutcomes {
-		p1wins, p2wins := quantumDieGame(other, current.move(roll), !p1Turn, universes*additional)
-		p1win += p1wins
-		p2win += p2wins
+		newPos := (currentPos + roll) % 10
+		newPoints := currentPoints + newPos + 1
+		wins := quantumDieGame(otherPos, newPos, otherPoints, newPoints)
+		res[0] += wins[1] * additional
+		res[1] += wins[0] * additional
 	}
 
-	return p1win, p2win
+	cache[[4]int{currentPos, otherPos, currentPoints, otherPoints}] = res
+	return res
 }
 
+var cache = map[[4]int][2]int{}
 var quantumDieOutcomes map[int]int = map[int]int{3: 1, 4: 3, 5: 6, 6: 7, 7: 6, 8: 3, 9: 1}
