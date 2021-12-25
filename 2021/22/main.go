@@ -42,9 +42,7 @@ func partOne(file util.File) int {
 		current := cuboid{min, max}
 		newCubes := []cuboid{}
 		for _, c := range cubes {
-			for _, new := range c.except(current) {
-				newCubes = append(newCubes, new)
-			}
+			newCubes = append(newCubes, c.except(current)...)
 		}
 		if state == "on" {
 			newCubes = append(newCubes, current)
@@ -70,9 +68,7 @@ func partTwo(file util.File) int {
 		current := cuboid{min, max}
 		newCubes := []cuboid{}
 		for _, c := range cubes {
-			for _, new := range c.except(current) {
-				newCubes = append(newCubes, new)
-			}
+			newCubes = append(newCubes, c.except(current)...)
 		}
 		if state == "on" {
 			newCubes = append(newCubes, current)

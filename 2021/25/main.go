@@ -2,14 +2,13 @@ package main
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/jdrst/adventofgo/util"
 )
 
 type floortile rune
 
-type marina [][]floortile
+// type marina [][]floortile
 
 func main() {
 	fmt.Printf("First part: %v\n", partOne(util.ReadFile("input.txt")))
@@ -76,13 +75,13 @@ func partOne(file util.File) int {
 	return cnt
 }
 
-func (f marina) String() string {
-	b := strings.Builder{}
-	for _, l := range f {
-		for _, c := range l {
-			b.WriteRune(rune(c))
-		}
-		b.WriteRune('\n')
-	}
-	return b.String()
-}
+// func (f marina) String() string {
+// 	b := strings.Builder{}
+// 	for _, l := range f {
+// 		for _, c := range l {
+// 			b.WriteRune(rune(c))
+// 		}
+// 		b.WriteRune('\n')
+// 	}
+// 	return b.String()
+// }
