@@ -23,7 +23,7 @@ type amphipod struct {
 type burrow struct {
 	depth      int
 	usedEnergy int
-	pods       map[util.Point]amphipod
+	pods       []amphipod
 }
 
 type cache struct {
@@ -79,8 +79,9 @@ notDone:
 func (a amphipod) move(b burrow) (possibilities []burrow) {
 	energy := b.usedEnergy
 	//remove self
-	currentMap := copyMap(b.pods)
-	delete(currentMap, util.Point{X: a.x, Y: a.y})
+	currentPods := make([]amphipod, len(b.pods))
+	copy(currentPods, b.pods)
+	currentPods = deletePod(a.x, a.y, currentPods)
 	//move out of side room
 	if a.y > 0 {
 		if a.hasMoved {
@@ -89,7 +90,7 @@ func (a amphipod) move(b burrow) (possibilities []burrow) {
 		//won't move if in correct destination
 		if a.y < 4 && a.x == a.destination {
 			for y := 4; y >= a.y; y-- {
-				if p, exists := currentMap[util.Point{X: a.x, Y: y}]; exists {
+				if p, exists := exists(a.x, y, b.pods); exists {
 					if p.tpe != a.tpe {
 						goto notDone
 					}
@@ -100,13 +101,13 @@ func (a amphipod) move(b burrow) (possibilities []burrow) {
 	notDone:
 		//can't move at all if entry is blocked
 		for y := a.y - 1; y >= 0; y-- {
-			if _, exists := currentMap[util.Point{X: a.x, Y: y}]; exists {
+			if _, exists := exists(a.x, y, b.pods); exists {
 				return
 			}
 		}
 
-		_, blockedLeft := currentMap[util.Point{X: a.x - 1, Y: 0}]
-		_, blockedRight := currentMap[util.Point{X: a.x + 1, Y: 0}]
+		_, blockedLeft := exists(a.x-1, 0, b.pods)
+		_, blockedRight := exists(a.x+1, 0, b.pods)
 		if blockedLeft && blockedRight {
 			return
 		}
@@ -126,11 +127,12 @@ func (a amphipod) move(b burrow) (possibilities []burrow) {
 				if x == 2 || x == 4 || x == 6 || x == 8 {
 					continue
 				}
-				if _, exists := currentMap[util.Point{X: x, Y: 0}]; exists {
+				if _, exists := exists(x, 0, b.pods); exists {
 					break
 				}
-				tempPods := copyMap(currentMap)
-				tempPods[util.Point{X: x, Y: newY}] = amphipod{tpe: a.tpe, energyPerStep: a.energyPerStep, x: x, y: newY, destination: a.destination, hasMoved: true}
+				tempPods := make([]amphipod, len(currentPods))
+				copy(tempPods, currentPods)
+				tempPods = append(tempPods, amphipod{tpe: a.tpe, energyPerStep: a.energyPerStep, x: x, y: newY, destination: a.destination, hasMoved: true})
 				possibilities = append(possibilities, burrow{usedEnergy: newEnergy, pods: tempPods, depth: b.depth})
 
 			}
@@ -143,11 +145,12 @@ func (a amphipod) move(b burrow) (possibilities []burrow) {
 				if x == 2 || x == 4 || x == 6 || x == 8 {
 					continue
 				}
-				if _, exists := currentMap[util.Point{X: x, Y: 0}]; exists {
+				if _, exists := exists(x, 0, b.pods); exists {
 					break
 				}
-				tempPods := copyMap(currentMap)
-				tempPods[util.Point{X: x, Y: newY}] = amphipod{tpe: a.tpe, energyPerStep: a.energyPerStep, x: x, y: newY, destination: a.destination, hasMoved: true}
+				tempPods := make([]amphipod, len(currentPods))
+				copy(tempPods, currentPods)
+				tempPods = append(tempPods, amphipod{tpe: a.tpe, energyPerStep: a.energyPerStep, x: x, y: newY, destination: a.destination, hasMoved: true})
 				possibilities = append(possibilities, burrow{usedEnergy: newEnergy, pods: tempPods, depth: b.depth})
 			}
 		}
@@ -155,12 +158,12 @@ func (a amphipod) move(b burrow) (possibilities []burrow) {
 	//move into side room
 	if a.y == 0 {
 		//can't move if side room occupated
-		if _, exists := currentMap[util.Point{X: a.destination, Y: 1}]; exists {
+		if _, exists := exists(a.destination, 1, b.pods); exists {
 			return
 		}
 		//don't move in if occupied with wrong type
 		for y := b.depth; y > 0; y-- {
-			if p, exists := currentMap[util.Point{X: a.destination, Y: y}]; exists {
+			if p, exists := exists(a.destination, y, b.pods); exists {
 				if p.tpe != a.tpe {
 					return
 				}
@@ -169,14 +172,14 @@ func (a amphipod) move(b burrow) (possibilities []burrow) {
 		//can't move if pod is in the way
 		if a.x > a.destination {
 			for x := a.x - 1; x >= a.destination; x-- {
-				if _, exists := currentMap[util.Point{X: x, Y: 0}]; exists {
+				if _, exists := exists(x, 0, b.pods); exists {
 					return
 				}
 			}
 		}
 		if a.x < a.destination {
 			for x := a.x + 1; x <= a.destination; x++ {
-				if _, exists := currentMap[util.Point{X: x, Y: 0}]; exists {
+				if _, exists := exists(x, 0, b.pods); exists {
 					return
 				}
 			}
@@ -184,14 +187,15 @@ func (a amphipod) move(b burrow) (possibilities []burrow) {
 		//move into target
 		newY := b.depth
 		for newY > 0 {
-			if _, exists := currentMap[util.Point{X: a.destination, Y: newY}]; !exists {
+			if _, exists := exists(a.destination, newY, b.pods); !exists {
 				break
 			}
 			newY--
 		}
-		newPods := copyMap(currentMap)
+		newPods := make([]amphipod, len(currentPods))
+		copy(newPods, currentPods)
 		newEnergy := energy + util.Delta(a.x, a.destination)*a.energyPerStep + newY*a.energyPerStep
-		newPods[util.Point{X: a.destination, Y: newY}] = amphipod{tpe: a.tpe, energyPerStep: a.energyPerStep, x: a.destination, y: newY, destination: a.destination, hasMoved: true}
+		newPods = append(newPods, amphipod{tpe: a.tpe, energyPerStep: a.energyPerStep, x: a.destination, y: newY, destination: a.destination, hasMoved: true})
 		possibilities = append(possibilities, burrow{usedEnergy: newEnergy, pods: newPods, depth: b.depth})
 	}
 	return possibilities
@@ -205,8 +209,8 @@ func copyMap(m map[util.Point]amphipod) map[util.Point]amphipod {
 	return res
 }
 
-func parseAmphipods(lines util.Lines) map[util.Point]amphipod {
-	burrow := map[util.Point]amphipod{}
+func parseAmphipods(lines util.Lines) []amphipod {
+	pods := []amphipod{}
 	for i, l := range lines {
 		for j, c := range string(l) {
 			var ePs, dest int
@@ -226,10 +230,10 @@ func parseAmphipods(lines util.Lines) map[util.Point]amphipod {
 			default:
 				continue
 			}
-			burrow[util.Point{X: j - 1, Y: i + 1}] = amphipod{tpe: c, energyPerStep: ePs, destination: dest, x: j - 1, y: i + 1}
+			pods = append(pods, amphipod{tpe: c, energyPerStep: ePs, destination: dest, x: j - 1, y: i + 1})
 		}
 	}
-	return burrow
+	return pods
 }
 
 func (b burrow) String() string {
@@ -238,7 +242,7 @@ func (b burrow) String() string {
 	sb.WriteString("#############\n")
 	sb.WriteRune('#')
 	for x, y := 0, 0; x < 11; x++ {
-		if p, exists := b.pods[util.Point{X: x, Y: y}]; exists {
+		if p, exists := exists(x, y, b.pods); exists {
 			sb.WriteRune(p.tpe)
 		} else {
 			sb.WriteRune('.')
@@ -256,7 +260,7 @@ func (b burrow) String() string {
 				sb.WriteRune('#')
 				continue
 			}
-			if p, exists := b.pods[util.Point{X: x, Y: y}]; exists {
+			if p, exists := exists(x, y, b.pods); exists {
 				sb.WriteRune(p.tpe)
 			} else {
 				sb.WriteRune('.')
@@ -281,6 +285,24 @@ func partTwo(file util.File) int {
 	c := cache{currentBest: &max, results: map[string]int{}}
 	res := moveUntilDone(makeBurrow(lines), &c)
 	return res
+}
+
+func exists(x, y int, pods []amphipod) (*amphipod, bool) {
+	for i, p := range pods {
+		if p.x == x && p.y == y {
+			return &pods[i], true
+		}
+	}
+	return nil, false
+}
+
+func deletePod(x, y int, pods []amphipod) []amphipod {
+	for i, p := range pods {
+		if p.x == x && p.y == y {
+			return append(pods[:i], pods[i+1:]...)
+		}
+	}
+	return pods
 }
 
 func min(a, b int) int {
