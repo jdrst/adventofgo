@@ -201,14 +201,6 @@ func (a amphipod) move(b burrow) (possibilities []burrow) {
 	return possibilities
 }
 
-func copyMap(m map[util.Point]amphipod) map[util.Point]amphipod {
-	res := map[util.Point]amphipod{}
-	for k, v := range m {
-		res[k] = v
-	}
-	return res
-}
-
 func parseAmphipods(lines util.Lines) []amphipod {
 	pods := []amphipod{}
 	for i, l := range lines {
