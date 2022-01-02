@@ -21,11 +21,6 @@ type distance struct {
 	from, to vector
 	value    int
 }
-
-type normalizedVector struct {
-	x, y, z float64
-}
-
 type scanner struct {
 	position vector
 	solved   bool
@@ -153,10 +148,7 @@ func pointDistances(p1 vector, points []vector) []distance {
 func rotationMatchable(a, b distance) bool {
 	v, _ := rotateUntil(a.from.minus(a.to), b.from, b.to, nil)
 	nV := vector{}
-	if v == nV {
-		return false
-	}
-	return true
+	return v != nV
 }
 
 func compareDistances(a, b []distance) (bool, []distance, []distance) {
