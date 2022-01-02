@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/hex"
 	"fmt"
+	"log"
 	"math"
 	"strconv"
 	"strings"
@@ -14,7 +16,7 @@ const (
 	product
 	minimum
 	maximum
-	value
+	literal
 	greaterThan
 	lessThan
 	equal
@@ -45,7 +47,7 @@ func partOne(file util.File) int {
 		tId, _ := strconv.ParseInt(binary[i+3:i+6], 2, 8)
 		sum += version
 		i += 6
-		if tId == value {
+		if tId == literal {
 			more := true
 			for more {
 				if binary[i] == '0' {
@@ -66,14 +68,25 @@ func partOne(file util.File) int {
 	return int(sum)
 }
 
-func toBinaryString(hex string) string {
-	sb := strings.Builder{}
-	for _, r := range hex {
-		bits, err := strconv.ParseUint(string(r), 16, 4)
-		util.Handle(err)
-		sb.WriteString(fmt.Sprintf("%04b", bits))
+func toBinaryString(str string) string {
+	decoded, err := hex.DecodeString(str)
+	if err != nil {
+		log.Fatal(err)
 	}
-	return sb.String()
+	s := make([]byte, len(decoded)*8)
+	for i, b := range decoded {
+		for j := 0; j < 8; j++ {
+			s[i*8+j] = b>>uint(7-j)&0x01 + '0'
+		}
+	}
+	return string(s)
+	// sb := strings.Builder{}
+	// for _, r := range hex {
+	// 	bits, err := strconv.ParseUint(string(r), 16, 4)
+	// 	util.Handle(err)
+	// 	sb.WriteString(fmt.Sprintf("%04b", bits))
+	// }
+	// return sb.String()
 }
 
 func partTwo(file util.File) int {
@@ -89,6 +102,7 @@ func partTwo(file util.File) int {
 		if !strings.ContainsRune(binary[i:], '1') {
 			done = true
 		}
+
 		if len(operations) > 0 {
 			op := operations[len(operations)-1]
 			if i == op.lastIndex || op.subPkgCount == 0 || done {
@@ -105,23 +119,26 @@ func partTwo(file util.File) int {
 				operations[len(operations)-1].subPkgCount--
 			}
 		}
+
 		tId, _ := strconv.ParseInt(binary[i+3:i+6], 2, 8)
 		i += 6
-		if tId == value {
+		if tId == literal {
 			more := true
-			var num string
+			var num int
 			for more {
 				if binary[i] == '0' {
 					more = false
 				}
-				num += string(binary[i+1 : i+5])
+				for j := 1; j < 5; j++ {
+					num <<= 1
+					num += int(binary[i+j] % 2)
+				}
 				i += 5
 			}
-			res, _ := strconv.ParseInt(num, 2, 64)
 			if len(operations) > 0 {
-				operations[len(operations)-1].values = append(operations[len(operations)-1].values, res)
+				operations[len(operations)-1].values = append(operations[len(operations)-1].values, int64(num))
 			} else {
-				return int(res)
+				return num
 			}
 			continue
 		}

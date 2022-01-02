@@ -151,12 +151,15 @@ func ManhattanDistance(a, b Point) int {
 	return Delta(a.X, b.X) + Delta(a.Y, b.Y)
 }
 
+//Abs returns the mathematical absolute value of a given integer
 func Abs(x int) int {
 	if x < 0 {
 		return x * -1
 	}
 	return x
 }
+
+//Delta returns the delta between given integers x and y
 func Delta(x, y int) int {
 	return Abs(x - y)
 }

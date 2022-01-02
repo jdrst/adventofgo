@@ -68,6 +68,12 @@ func BenchmarkPartOne(b *testing.B) {
 	}
 }
 
+func BenchmarkToBinaryString(b *testing.B) {
+	input := util.ReadFile("input.txt").AsLines()
+	for n := 0; n < b.N; n++ {
+		toBinaryString(string(input[0]))
+	}
+}
 func BenchmarkPartTwo(b *testing.B) {
 	input := util.ReadFile("input.txt")
 	for n := 0; n < b.N; n++ {
