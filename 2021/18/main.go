@@ -121,8 +121,8 @@ func (num *sfnum) split() {
 	if *num.value%2 == 1 {
 		rv++
 	}
-	num.left = &sfnum{value: &lv, parent: num}
-	num.right = &sfnum{value: &rv, parent: num}
+	num.addLeftValue(lv)
+	num.addRightValue(rv)
 	num.value = nil
 }
 
@@ -225,31 +225,42 @@ func findRightMost(num *sfnum) *sfnum {
 	}
 }
 
+func (num *sfnum) addChild(left bool, child *sfnum) (*sfnum, bool) {
+	if left {
+		num.left = child
+	} else {
+		num.right = child
+	}
+	return child, true
+}
+
+func (num *sfnum) addValue(left bool, value int) {
+	if left {
+		num.addLeftValue(value)
+	} else {
+		num.addRightValue(value)
+	}
+}
+
+func (num *sfnum) addLeftValue(value int) {
+	num.left = &sfnum{value: &value, parent: num}
+}
+
+func (num *sfnum) addRightValue(value int) {
+	num.right = &sfnum{value: &value, parent: num}
+}
+
 func toSfnum(s string) *sfnum {
 	num := &sfnum{}
 	isLeft := true
 	for _, c := range s[1 : len(s)-1] {
 		switch c {
 		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
-			if isLeft {
-				fst := int(c - '0')
-				num.left = &sfnum{value: &fst, parent: num}
-			} else {
-				snd := int(c - '0')
-				num.right = &sfnum{value: &snd, parent: num}
-				isLeft = true
-			}
+			num.addValue(isLeft, int(c-'0'))
 		case ',':
 			isLeft = false
 		case '[':
-			child := &sfnum{parent: num}
-			if isLeft {
-				num.left = child
-			} else {
-				num.right = child
-				isLeft = true
-			}
-			num = child
+			num, isLeft = num.addChild(isLeft, &sfnum{parent: num})
 		case ']':
 			num = num.parent
 		}
