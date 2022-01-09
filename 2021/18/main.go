@@ -192,51 +192,61 @@ func (num *sfnum) trySplit() bool {
 }
 
 func findRegularLeft(num *sfnum) (res *sfnum, isFirst bool) {
-	if num.parent == nil {
-		return nil, true
+	for {
+		if num.parent == nil {
+			return nil, true
+		}
+		if num.parent.first != nil {
+			return num.parent, true
+		}
+		if num.parent.left != num {
+			res := findRightMost(num.parent.left)
+			return res, false
+		}
+		num = num.parent
 	}
-	if num.parent.first != nil {
-		return num.parent, true
-	}
-	if num.parent.left != num {
-		res := findRightMost(num.parent.left)
-		return res, false
-	}
-	return findRegularLeft(num.parent)
 }
 
 func findRegularRight(num *sfnum) (res *sfnum, isFirst bool) {
-	if num.parent == nil {
-		return nil, false
+	for {
+		if num.parent == nil {
+			return nil, false
+		}
+		if num.parent.second != nil {
+			return num.parent, false
+		}
+		if num.parent.right != num {
+			res := findLeftMost(num.parent.right)
+			return res, true
+		}
+		num = num.parent
 	}
-	if num.parent.second != nil {
-		return num.parent, false
-	}
-	if num.parent.right != num {
-		res := findLeftMost(num.parent.right)
-		return res, true
-	}
-	return findRegularRight(num.parent)
 }
 
 func findLeftMost(num *sfnum) *sfnum {
-	if num.left != nil {
-		return findLeftMost(num.left)
+	for {
+		if num.left != nil {
+			num = num.left
+			continue
+		}
+		if num.second != nil {
+			return num
+		}
+		return nil
 	}
-	if num.first != nil {
-		return num
-	}
-	return nil
 }
 
 func findRightMost(num *sfnum) *sfnum {
-	if num.right != nil {
-		return findRightMost(num.right)
+	for {
+		if num.right != nil {
+			num = num.right
+			continue
+		}
+		if num.second != nil {
+			return num
+		}
+		return nil
 	}
-	if num.second != nil {
-		return num
-	}
-	return nil
 }
 
 func toSfnum(s string) *sfnum {
