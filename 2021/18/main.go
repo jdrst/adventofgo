@@ -10,7 +10,7 @@ import (
 
 type sfnum struct {
 	parent, left, right *sfnum
-	first, second       *int
+	value               *int
 }
 
 func main() {
@@ -79,65 +79,51 @@ func partTwo(file util.File) int {
 }
 
 func (num *sfnum) magnitude() *int {
+	if num.value != nil {
+		return num.value
+	}
+	var first, second *int
 	if num.left != nil {
-		num.first = num.left.magnitude()
+		first = num.left.magnitude()
 	}
 	if num.right != nil {
-		num.second = num.right.magnitude()
+		second = num.right.magnitude()
 	}
-	res := *num.first*3 + *num.second*2
-	return &res
+	res := (*first*3 + *second*2)
+	num.value = &res
+	return num.value
 }
 
 func (num *sfnum) explode() {
-	// fmt.Printf("exploding [%v,%v]\n", *num.first, *num.second)
-	setNum := func(num *sfnum, add *int, isLeft bool) {
+	// fmt.Printf("exploding [%v,%v]\n", *num.left.value, *num.right.value)
+	setNum := func(num *sfnum, add *int) {
 		if num != nil {
-			if isLeft {
-				new := *num.first + *add
-				num.first = &new
-			} else {
-				new := *num.second + *add
-				num.second = &new
-			}
+			new := *num.value + *add
+			num.value = &new
 		}
 	}
 
-	left, isLeft := findRegularLeft(num)
-	setNum(left, num.first, isLeft)
+	left, _ := findRegularLeft(num)
+	setNum(left, num.left.value)
 
-	right, isLeft := findRegularRight(num)
-	setNum(right, num.second, isLeft)
+	right, _ := findRegularRight(num)
+	setNum(right, num.right.value)
 
 	null := 0
-	if num.parent.left == num {
-		num.parent.first = &null
-		num.parent.left = nil
-	}
-	if num.parent.right == num {
-		num.parent.second = &null
-		num.parent.right = nil
-	}
+	num.value = &null
+	num.left, num.right = nil, nil
 }
 
-func (num *sfnum) split(left bool) {
-	split := func(from int) *sfnum {
-		newLeft := from / 2
-		newRight := from / 2
-		if from%2 == 1 {
-			newRight++
-		}
-		return &sfnum{first: &newLeft, second: &newRight, parent: num}
+func (num *sfnum) split() {
+	// fmt.Printf("splitting %v\n", fmt.Sprint(num))
+	lv := *num.value / 2
+	rv := *num.value / 2
+	if *num.value%2 == 1 {
+		rv++
 	}
-	if left {
-		// fmt.Printf("splitting [%v,]\n", *num.first)
-		num.left = split(*num.first)
-		num.first = nil
-	} else {
-		// fmt.Printf("splitting [,%v]\n", *num.second)
-		num.right = split(*num.second)
-		num.second = nil
-	}
+	num.left = &sfnum{value: &lv, parent: num}
+	num.right = &sfnum{value: &rv, parent: num}
+	num.value = nil
 }
 
 func (num *sfnum) reduce() {
@@ -159,7 +145,7 @@ explode:
 
 func (num *sfnum) tryExplode(depth int) bool {
 	res := false
-	if depth > 3 {
+	if depth > 3 && num.value == nil {
 		num.explode()
 		return true
 	}
@@ -177,15 +163,11 @@ func (num *sfnum) trySplit() bool {
 	if num.left != nil {
 		res = num.left.trySplit()
 	}
-	if !res && num.first != nil && *num.first > 9 {
-		num.split(true)
-		return true
-	}
 	if !res && num.right != nil {
 		res = num.right.trySplit()
 	}
-	if !res && num.second != nil && *num.second > 9 {
-		num.split(false)
+	if !res && num.value != nil && *num.value > 9 {
+		num.split()
 		return true
 	}
 	return res
@@ -196,7 +178,7 @@ func findRegularLeft(num *sfnum) (res *sfnum, isFirst bool) {
 		if num.parent == nil {
 			return nil, true
 		}
-		if num.parent.first != nil {
+		if num.parent.value != nil {
 			return num.parent, true
 		}
 		if num.parent.left != num {
@@ -212,7 +194,7 @@ func findRegularRight(num *sfnum) (res *sfnum, isFirst bool) {
 		if num.parent == nil {
 			return nil, false
 		}
-		if num.parent.second != nil {
+		if num.parent.value != nil {
 			return num.parent, false
 		}
 		if num.parent.right != num {
@@ -229,10 +211,7 @@ func findLeftMost(num *sfnum) *sfnum {
 			num = num.left
 			continue
 		}
-		if num.second != nil {
-			return num
-		}
-		return nil
+		return num
 	}
 }
 
@@ -242,10 +221,7 @@ func findRightMost(num *sfnum) *sfnum {
 			num = num.right
 			continue
 		}
-		if num.second != nil {
-			return num
-		}
-		return nil
+		return num
 	}
 }
 
@@ -257,10 +233,10 @@ func toSfnum(s string) *sfnum {
 		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
 			if isLeft {
 				fst := int(c - '0')
-				num.first = &fst
+				num.left = &sfnum{value: &fst, parent: num}
 			} else {
 				snd := int(c - '0')
-				num.second = &snd
+				num.right = &sfnum{value: &snd, parent: num}
 				isLeft = true
 			}
 		case ',':
@@ -282,20 +258,17 @@ func toSfnum(s string) *sfnum {
 }
 
 func (num *sfnum) String() string {
+	if num.value != nil {
+		return fmt.Sprint(*num.value)
+	}
 	sb := strings.Builder{}
 	sb.WriteRune('[')
 	if num.left != nil {
 		sb.WriteString(fmt.Sprint(num.left))
 	}
-	if num.first != nil {
-		sb.WriteString(fmt.Sprint(*num.first))
-	}
 	sb.WriteRune(',')
 	if num.right != nil {
 		sb.WriteString(fmt.Sprint(num.right))
-	}
-	if num.second != nil {
-		sb.WriteString(fmt.Sprint(*num.second))
 	}
 	sb.WriteRune(']')
 	return sb.String()
